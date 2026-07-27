@@ -1,517 +1,388 @@
-<title>NetBox Swap — End-to-End Flow</title>
+<title>NetBox Swap — Interactive Prototype</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{
-  /* ---- Wiom DS tokens ---- */
-  --brand:#D9008D; --brand-press:#A30070; --brand-tint:#FFE5F6; --maroon:#4A1535;
-  --screen:#FAF1DF; --card:#FBE9D2;
-  --pos:#008043; --pos-bg:#E1FAED;
-  --neg:#D92130; --neg-bg:#FDE7E7;
-  --warn-bg:#FBE7A8; --warn-fg:#372902; --warn-icon:#E88C1A;
-  --ink:#231F20; --ink-2:#6B675F; --ink-3:#8C8578; --hair:#E7DBC4;
-  /* ---- page chrome (light) ---- */
-  --bg:#EFE7DC; --bg-2:#E4D9C9; --panel:#FBF6EE; --panel-line:#DECFB8;
-  --txt:#2B2019; --txt-2:#7A6C5C; --eyebrow:#B08A5E; --accent:var(--brand);
-  --wire:#D9B2CB;
-  --shadow:0 1px 2px rgba(60,40,20,.06),0 12px 30px -12px rgba(60,40,20,.22);
-  --phone-shadow:0 3px 6px rgba(50,30,15,.12),0 30px 55px -26px rgba(50,30,15,.4);
-  --k:.66; /* gallery scale: 360dp → ~238px */
+  --brand:#D9008D; --brand-press:#A30070; --tint:#FFE5F6; --maroon:#4A1535;
+  --cream:#FBF1E1; --progbg:#F1E1D9; --menu:#EFE0DC;
+  --green:#12A150; --green-ic:#008043; --posbg:#E1FAED;
+  --red:#D92130; --warnbg:#FBEBB6; --warnic:#E8721C; --warnamber:#E2B203;
+  --ink:#231F20; --ink2:#6B675F; --ink3:#8C8578; --hair:#E7DBC4;
+  --page:#1b1016; --pane:#241820; --paneline:#3a2833; --ptext:#f3e8ee; --ptext2:#b49aa8; --accent:#FF3FAE;
 }
-@media (prefers-color-scheme:dark){
-  :root{
-    --bg:#1B1016; --bg-2:#160C11; --panel:#241820; --panel-line:#3A2833;
-    --txt:#F3E8EE; --txt-2:#B49AA8; --eyebrow:#C98BB0; --accent:#FF3FAE; --wire:#5A3A4C;
-    --shadow:0 1px 2px rgba(0,0,0,.3),0 14px 34px -14px rgba(0,0,0,.6);
-    --phone-shadow:0 3px 8px rgba(0,0,0,.45),0 34px 60px -28px rgba(0,0,0,.75);
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#1B1016; --bg-2:#160C11; --panel:#241820; --panel-line:#3A2833;
-  --txt:#F3E8EE; --txt-2:#B49AA8; --eyebrow:#C98BB0; --accent:#FF3FAE; --wire:#5A3A4C;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 14px 34px -14px rgba(0,0,0,.6);
-  --phone-shadow:0 3px 8px rgba(0,0,0,.45),0 34px 60px -28px rgba(0,0,0,.75);
-}
-:root[data-theme="light"]{
-  --bg:#EFE7DC; --bg-2:#E4D9C9; --panel:#FBF6EE; --panel-line:#DECFB8;
-  --txt:#2B2019; --txt-2:#7A6C5C; --eyebrow:#B08A5E; --accent:#D9008D; --wire:#D9B2CB;
-}
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{
-  margin:0; background:
-    radial-gradient(1200px 500px at 15% -8%, color-mix(in srgb,var(--accent) 10%, transparent), transparent 60%),
-    linear-gradient(180deg,var(--bg),var(--bg-2));
-  color:var(--txt);
-  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  -webkit-font-smoothing:antialiased; line-height:1.5;
-}
-/* Devanagari uses the platform Hindi face — same as the app (Nirmala UI) */
-.dv{font-family:"Nirmala UI","Noto Sans Devanagari","Kohinoor Devanagari","Mangal",system-ui,sans-serif;}
-
-/* ---------- page frame ---------- */
-.wrap{max-width:1280px;margin:0 auto;padding:40px 28px 80px}
-header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:8px}
-.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--eyebrow);font-weight:700;margin:0 0 10px}
-h1{font-size:clamp(28px,4vw,46px);line-height:1.04;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
-h1 .accent{color:var(--accent)}
-.sub{margin:14px 0 0;max-width:60ch;color:var(--txt-2);font-size:15.5px}
-.controls{display:flex;gap:10px;align-items:center}
-.seg{display:inline-flex;background:var(--panel);border:1px solid var(--panel-line);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
-.seg button{border:0;background:transparent;color:var(--txt-2);font:inherit;font-weight:700;font-size:13px;padding:7px 14px;border-radius:999px;cursor:pointer}
+@media (prefers-color-scheme:light){:root{--page:#efe7dc;--pane:#fbf6ee;--paneline:#e0d3bf;--ptext:#2b2019;--ptext2:#7a6c5c;--accent:#D9008D;}}
+:root[data-theme="light"]{--page:#efe7dc;--pane:#fbf6ee;--paneline:#e0d3bf;--ptext:#2b2019;--ptext2:#7a6c5c;--accent:#D9008D;}
+:root[data-theme="dark"]{--page:#1b1016;--pane:#241820;--paneline:#3a2833;--ptext:#f3e8ee;--ptext2:#b49aa8;--accent:#FF3FAE;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(1000px 480px at 20% -10%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 60%),var(--page);color:var(--ptext);font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;min-height:100vh}
+.dv{font-family:"Nirmala UI","Noto Sans Devanagari","Kohinoor Devanagari","Mangal",system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 22px 70px;display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap}
+.lead{flex:1;min-width:280px}
+.eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:800;margin:0 0 10px}
+h1{font-size:clamp(26px,3.4vw,40px);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em}
+.sub{margin:14px 0 22px;max-width:46ch;color:var(--ptext2);font-size:15px;line-height:1.55}
+.seg{display:inline-flex;background:var(--pane);border:1px solid var(--paneline);border-radius:999px;padding:3px;margin-bottom:20px}
+.seg button{border:0;background:transparent;color:var(--ptext2);font:inherit;font-weight:700;font-size:13px;padding:7px 15px;border-radius:999px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
-.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ptext2);margin:22px 0 10px;font-weight:800}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1px solid var(--paneline);background:var(--pane);color:var(--ptext);border-radius:9px;padding:7px 11px;font-size:12.5px;cursor:pointer;font-family:inherit;transition:.15s}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.hint{font-size:12.5px;color:var(--ptext2);margin-top:14px;line-height:1.5}
 
-.legend{display:flex;gap:18px;flex-wrap:wrap;margin:26px 0 4px;padding:14px 16px;background:var(--panel);border:1px solid var(--panel-line);border-radius:14px;box-shadow:var(--shadow);font-size:12.5px;color:var(--txt-2)}
-.legend b{color:var(--txt)}
-.legend .k{display:inline-flex;align-items:center;gap:8px}
-.dot{width:11px;height:11px;border-radius:50%}
-.dot.pos{background:var(--pos)} .dot.neg{background:var(--neg)} .dot.brand{background:var(--brand)} .dot.warn{background:var(--warn-icon)}
+/* ---------- device ---------- */
+.stage{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:14px}
+.device{width:352px;height:740px;background:#0f0b09;border-radius:44px;padding:11px;box-shadow:0 4px 8px rgba(40,20,10,.14),0 40px 70px -30px rgba(40,20,10,.5);position:sticky;top:24px}
+.screen{position:relative;width:100%;height:100%;background:var(--cream);border-radius:34px;overflow:hidden}
+.pg{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;transform:translateX(14px);pointer-events:none;transition:opacity .28s ease,transform .28s ease;overflow:hidden}
+.pg.active{opacity:1;transform:none;pointer-events:auto}
+.restart{font-size:12.5px;color:var(--ptext2);cursor:pointer;background:none;border:0;font-family:inherit}
+.restart:hover{color:var(--accent)}
 
-/* ---------- phases ---------- */
-.phase{margin-top:46px}
-.phase-head{display:flex;align-items:baseline;gap:14px;margin:0 0 22px;padding-bottom:12px;border-bottom:1px solid var(--panel-line)}
-.phase-num{font-size:13px;font-weight:800;color:#fff;background:var(--accent);border-radius:8px;padding:3px 9px}
-.phase-head h2{font-size:20px;margin:0;font-weight:800;letter-spacing:-.01em}
-.phase-head p{margin:0;color:var(--txt-2);font-size:13.5px}
+/* status bar */
+.sbar{height:30px;display:flex;align-items:center;justify-content:space-between;padding:9px 18px 0;font-size:12px;font-weight:600;flex:0 0 auto}
+.sbar .r{opacity:.72;font-size:10.5px;letter-spacing:.3px}
+.sbar.onmaroon{color:#fff}
+.sbar.onink{color:var(--ink)}
+/* app bars */
+.abar{display:flex;align-items:center;gap:12px;padding:10px 14px;flex:0 0 auto}
+.abar.maroon{background:var(--maroon);color:#fff}
+.abar.maroon .ttl{font-weight:800;font-size:15px}
+.abar .ico{font-size:20px;cursor:pointer}
+.abar .grow{flex:1}
+.abar.light{color:var(--ink)}
+.abar.light .x{font-size:21px;cursor:pointer}
+.abar.light .help{color:var(--brand);font-weight:700;font-size:14px;cursor:pointer}
+.body{flex:1;overflow-y:auto;overflow-x:hidden}
+.body.pad{padding:14px 16px}
+.center{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px;gap:15px}
+.center.up{justify-content:flex-start;padding-top:33%}
+.htitle{font-weight:800;font-size:19px;color:var(--ink);line-height:1.25}
+.hlg{font-weight:800;font-size:22px;color:var(--ink);line-height:1.22}
+.hsub{font-size:14px;color:var(--ink2);line-height:1.45}
 
-.lane{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
-.step{display:flex;flex-direction:column;align-items:center;gap:10px}
-.caption{font-size:12.5px;color:var(--txt-2);text-align:center;max-width:230px}
-.caption b{color:var(--txt);display:block;font-size:13px;margin-bottom:2px}
-.branch{display:flex;flex-direction:column;gap:22px}
-.branch-row{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
-.tag{align-self:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
-.tag.pos{background:var(--pos-bg);color:var(--pos)} .tag.neg{background:var(--neg-bg);color:var(--neg)}
-.arrow{align-self:center;color:var(--wire);font-size:26px;line-height:1;user-select:none}
+/* banner */
+.banner{display:flex;gap:12px;align-items:center;background:var(--warnbg);border-radius:13px;padding:14px}
+.banner .ci{width:40px;height:40px;border-radius:50%;background:var(--warnic);color:#fff;font-weight:900;font-size:20px;display:grid;place-items:center;flex:0 0 auto}
+.banner b{font-size:16px;color:var(--ink)} .banner p{margin:2px 0 0;font-size:13px;color:var(--ink2)}
+.sec{margin-top:16px}
+.sec .hd{display:flex;align-items:center;gap:8px}
+.sec .hd .ic{color:var(--ink2);font-size:16px}
+.sec .hd b{font-size:16px;color:var(--ink);font-weight:800;flex:1}
+.badge{background:var(--brand);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:10px;display:grid;place-items:center;padding:0 6px}
+.chev{color:var(--ink2);font-size:15px}
+.muted{font-size:13px;color:var(--ink2);margin-top:6px}
+.pass{font-size:13px;color:var(--green-ic);font-weight:700;margin-top:6px}
+.rowlink{display:flex;align-items:center;margin-top:10px}
+.rowlink span{flex:1;font-size:13px;color:var(--ink)}
+.pink{color:var(--brand);font-weight:700}
+.hr{height:1px;background:var(--hair);margin:16px 0}
 
-/* ---------- phone : authored at real Android dp (1px≈1dp), scaled by --k ---------- */
-.phone{width:360px;flex:0 0 auto;background:var(--screen);border-radius:44px;overflow:hidden;
-  box-shadow:var(--phone-shadow);border:9px solid #17110d;position:relative;cursor:zoom-in;
-  transition:transform .2s ease;zoom:var(--k)}
-.phone:hover{transform:translateY(-5px)}
-.status{height:36px;display:flex;align-items:center;justify-content:space-between;padding:12px 22px 0;font-size:15px;color:var(--ink);font-weight:600}
-.status .r{display:flex;gap:7px;align-items:center;font-size:13px;font-weight:700;opacity:.8}
-.screen-body{min-height:744px;display:flex;flex-direction:column;position:relative}
+/* buttons */
+.ctabar{padding:12px 16px 18px;flex:0 0 auto}
+.btn{display:block;width:100%;text-align:center;border:0;border-radius:26px;padding:15px;font-weight:800;font-size:14.5px;font-family:inherit;cursor:pointer}
+.btn.fill{background:var(--brand);color:#fff}.btn.fill:active{background:var(--brand-press)}
+.btn.text{background:transparent;color:var(--brand)}
+.reminder{font-size:12px;color:var(--ink2);text-align:center;padding:0 20px 8px}
 
-.appbar{display:flex;align-items:center;gap:12px;padding:14px 16px}
-.appbar--maroon{background:var(--maroon);color:#fff}
-.appbar--maroon .ttl{font-weight:800;font-size:18px;line-height:1.15}
-.appbar--maroon .ic{font-size:24px;font-weight:400}
-.appbar--maroon .kebab{margin-left:auto;font-size:24px;font-weight:800}
-.appbar--light{color:var(--ink)}
-.appbar--light .x{font-size:26px;font-weight:500}
-.appbar--light .help{margin-left:auto;color:var(--brand);font-weight:700;font-size:17px}
+/* progress */
+.prog{margin:8px 16px 0;background:var(--progbg);border-radius:18px;padding:16px 16px}
+.ptrack{display:flex;align-items:center}
+.pnode{width:26px;height:26px;border-radius:50%;border:2px solid #CBB6C2;flex:0 0 auto;display:grid;place-items:center}
+.pnode.on{border-color:var(--brand);background:var(--brand)} .pnode.on::after{content:"";width:9px;height:9px;border-radius:50%;background:#fff}
+.pnode.done{border-color:var(--green);background:var(--green);color:#fff;font-size:13px;font-weight:900}
+.pseg{height:2px;background:#DDC8D5;flex:1}.pseg.done{background:var(--green)}
+.plabels{display:flex;margin-top:9px}.plabels span{flex:1;text-align:center;font-size:9.5px;color:var(--ink3);line-height:1.15;padding:0 2px}.plabels span.on{color:var(--ink);font-weight:700}
 
-.pad{padding:0 24px}
-.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 32px;gap:22px}
-.center.upper{justify-content:center;padding-bottom:30%}
-.h-title{font-weight:800;font-size:24px;color:var(--ink);line-height:1.25;text-wrap:balance;letter-spacing:-.01em}
-.h-sub{font-size:16px;color:var(--ink-2);line-height:1.45}
-.h-lg{font-size:26px;font-weight:800;letter-spacing:-.015em;line-height:1.22;color:var(--ink)}
-
-.glyph{display:grid;place-items:center}
-.glyph svg{width:66px;height:66px}
-.halo{width:120px;height:120px;border-radius:50%;background:var(--brand-tint);display:grid;place-items:center}
-.halo svg{width:58px;height:58px}
-
-.prog{margin:10px 16px 0;background:#F1E1D9;border-radius:20px;padding:20px 18px}
-.prog .track{display:flex;align-items:center}
-.prog .node{width:28px;height:28px;border-radius:50%;border:2px solid #CBB6C2;background:transparent;flex:0 0 auto;display:grid;place-items:center}
-.prog .node.on{border-color:var(--brand);background:var(--brand)}
-.prog .node.on::after{content:"";width:10px;height:10px;border-radius:50%;background:#fff}
-.prog .node.done{border-color:var(--brand);background:var(--brand)}
-.prog .node.done::after{content:"";width:12px;height:6px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg);margin-top:-2px}
-.prog .seg{height:2px;background:#DDC8D5;flex:1}
-.prog .seg.done{background:var(--brand)}
-.prog .labels{display:flex;margin-top:10px}
-.prog .labels span{flex:1;text-align:center;font-size:11px;color:var(--ink-3);line-height:1.2;padding:0 3px}
-.prog .labels span.on{color:var(--ink);font-weight:700}
-
-.banner{margin:16px;background:var(--warn-bg);border-radius:16px;padding:18px;display:flex;gap:14px;align-items:flex-start}
-.banner .ci{width:46px;height:46px;border-radius:50%;background:var(--warn-icon);display:grid;place-items:center;color:#fff;font-weight:900;font-size:24px;flex:0 0 auto}
-.banner b{font-size:19px;color:var(--ink)} .banner p{margin:4px 0 0;font-size:15px;color:var(--ink-2)}
-.row-info{margin:20px 16px 0;font-size:15px;color:var(--ink-2)}
-.row-info .k{color:var(--ink);font-weight:700;margin-bottom:4px;display:block;font-size:17px}
-.chk{color:var(--pos);font-weight:700}
-
-.viewfinder{margin:24px auto 0;width:224px;height:224px;border-radius:24px;position:relative;background:linear-gradient(135deg,#2b2b2b,#0f0f0f);overflow:hidden}
-.viewfinder .corner{position:absolute;width:36px;height:36px;border:4px solid var(--brand)}
-.viewfinder .c1{top:14px;left:14px;border-right:0;border-bottom:0;border-radius:8px 0 0 0}
-.viewfinder .c2{top:14px;right:14px;border-left:0;border-bottom:0;border-radius:0 8px 0 0}
-.viewfinder .c3{bottom:14px;left:14px;border-right:0;border-top:0;border-radius:0 0 0 8px}
-.viewfinder .c4{bottom:14px;right:14px;border-left:0;border-top:0;border-radius:0 0 8px 0}
-.viewfinder .qr{position:absolute;inset:52px;background:repeating-conic-gradient(#eaeaea 0 25%, #111 0 50%) 0 0/30px 30px;opacity:.85;border-radius:6px}
-
-.steps{margin:16px;display:flex;flex-direction:column;gap:16px;padding:0}
-.steps li{list-style:none;display:flex;gap:12px;align-items:flex-start;font-size:15px;color:var(--ink);line-height:1.4}
-.steps .n{width:28px;height:28px;border-radius:50%;background:var(--brand-tint);color:var(--brand);font-weight:800;font-size:15px;display:grid;place-items:center;flex:0 0 auto}
-.portal{margin:18px 16px 0;text-align:center;color:var(--brand);font-weight:700;font-size:17px}
-
-.spin{width:54px;height:54px;border-radius:50%;border:4px solid #ecdfe7;border-top-color:var(--brand);animation:sp 1s linear infinite}
+/* icon glyphs */
+.halo{width:104px;height:104px;border-radius:50%;background:var(--tint);display:grid;place-items:center}
+.gcircle{width:62px;height:62px;border-radius:50%;border:3px solid;display:grid;place-items:center;font-size:34px;font-weight:800}
+.gcircle.g{border-color:var(--green-ic);color:var(--green-ic)}
+.gcircle.r{border-color:var(--red);color:var(--red)}
+.gcircle.a{border-color:var(--warnamber);color:var(--warnamber)}
+/* spinner (material indeterminate) */
+.spin{width:50px;height:50px;border-radius:50%;border:4px solid transparent;border-top-color:var(--brand);border-right-color:var(--brand);animation:sp .9s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.ring{width:124px;height:124px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--brand) 62%, #ecdfe7 0)}
-.ring .in{width:100px;height:100px;border-radius:50%;background:var(--screen);display:grid;place-items:center;font-weight:800;font-size:24px;color:var(--ink)}
-@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+@media (prefers-reduced-motion:reduce){.spin{animation:sp 2s linear infinite}}
+/* router */
+.router{position:relative;width:70px;height:56px}
+.router .rbody{position:absolute;left:9px;bottom:6px;width:52px;height:20px;background:var(--brand);border-radius:5px}
+.router .led{position:absolute;bottom:12px;width:4px;height:4px;border-radius:50%;background:var(--tint)}
+.router .ant{position:absolute;left:33px;bottom:24px;width:3px;height:14px;background:var(--brand);border-radius:2px}
+.router .wv{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);border:2.5px solid var(--brand);border-bottom-color:transparent;border-left-color:transparent;border-right-color:transparent;border-radius:50%}
+/* countdown */
+.ring{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--brand) 62%,#E7D6E0 0)}
+.ring .in{width:84px;height:84px;border-radius:50%;background:var(--cream);display:grid;place-items:center;font-weight:800;font-size:19px;color:var(--ink)}
 
-.cta-bar{padding:16px 16px 24px;margin-top:auto}
-.cta{display:block;width:100%;text-align:center;border-radius:30px;padding:18px;font-weight:800;font-size:17px;border:0;cursor:pointer;font-family:inherit;line-height:1.2}
-.cta--fill{background:var(--brand);color:#fff}
-.cta--text{background:transparent;color:var(--brand)}
-.reminder{margin:0 20px 14px;font-size:14px;color:var(--ink-2);text-align:center;line-height:1.4}
+/* viewfinder */
+.vf{width:196px;height:196px;border-radius:20px;background:linear-gradient(135deg,#2b2b2b,#101010);position:relative;margin:6px auto 0}
+.vf i{position:absolute;width:32px;height:32px;border:3px solid var(--brand)}
+.vf .c1{top:12px;left:12px;border-right:0;border-bottom:0;border-radius:6px 0 0 0}
+.vf .c2{top:12px;right:12px;border-left:0;border-bottom:0;border-radius:0 6px 0 0}
+.vf .c3{bottom:12px;left:12px;border-right:0;border-top:0;border-radius:0 0 0 6px}
+.vf .c4{bottom:12px;right:12px;border-left:0;border-top:0;border-radius:0 0 6px 0}
+.vf .qr{position:absolute;inset:46px;border-radius:6px;background:repeating-conic-gradient(#e9e9e9 0 25%,#141414 0 50%) 0 0/26px 26px}
 
 /* sheets */
-.sheet{width:360px;flex:0 0 auto;background:var(--screen);border-radius:26px 26px 44px 44px;box-shadow:var(--phone-shadow);
-  border:9px solid #17110d;border-top:0;overflow:hidden;cursor:zoom-in;zoom:var(--k)}
-.sheet .grab{width:50px;height:5px;background:#d9ccb6;border-radius:3px;margin:16px auto 6px}
-.sheet .body{padding:8px 22px 24px}
-.sheet h4{margin:10px 0 6px;font-size:21px;font-weight:800;color:var(--ink)}
-.sheet p{margin:0 0 16px;font-size:15px;color:var(--ink-2)}
-.opt{border:1px solid var(--hair);border-radius:14px;padding:16px;font-size:16px;color:var(--ink);margin-bottom:10px;background:var(--card)}
-.opt.sel{border-color:var(--brand);background:var(--brand-tint)}
-.inputbox{border:1px solid var(--hair);border-radius:14px;padding:17px;font-size:16px;color:var(--ink-3);background:#fff;margin-bottom:16px}
-
-/* zoom modal — show at true device dp */
-.modal{position:fixed;inset:0;background:rgba(15,8,12,.74);backdrop-filter:blur(3px);display:none;place-items:center;z-index:50;padding:24px}
-.modal.on{display:grid}
-.modal .stage .phone,.modal .stage .sheet{zoom:1;cursor:default}
-.modal .close{position:fixed;top:18px;right:22px;color:#fff;font-size:26px;cursor:pointer;background:none;border:0}
-
-footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--panel-line);color:var(--txt-2);font-size:13px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.pill{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);border-radius:999px;padding:3px 10px}
-@media (max-width:640px){.wrap{padding:26px 16px 60px}:root{--k:.5}}
+.scrim{position:absolute;inset:0;background:rgba(20,10,15,.34);opacity:0;pointer-events:none;transition:.25s;z-index:8}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--cream);border-radius:22px 22px 0 0;transform:translateY(102%);transition:transform .3s cubic-bezier(.2,.8,.2,1);z-index:9;max-height:88%;display:flex;flex-direction:column}
+.sheet.on{transform:none}
+.sheet .grab{width:44px;height:5px;background:#D9CCB6;border-radius:3px;margin:12px auto 4px;flex:0 0 auto}
+.sheet .sbody{padding:6px 18px 18px;overflow-y:auto}
+.sheet h4{margin:8px 0 4px;font-size:18px;font-weight:800;color:var(--ink)}
+.sheet p.ssub{margin:0 0 14px;font-size:13px;color:var(--ink2)}
+/* material menu */
+.menu{position:absolute;top:52px;right:10px;background:var(--menu);border-radius:12px;box-shadow:0 8px 26px rgba(0,0,0,.22);transform:scale(.9);transform-origin:top right;opacity:0;pointer-events:none;transition:.16s;z-index:9;min-width:210px;padding:6px 0}
+.menu.on{transform:none;opacity:1;pointer-events:auto}
+.menu .mi{padding:14px 18px;font-size:16px;color:var(--ink);cursor:pointer}
+.menu .mi:active{background:rgba(0,0,0,.05)}
+.menu .mdiv{height:1px;background:rgba(0,0,0,.08);margin:0 4px}
+/* material radio / checkbox / search / input */
+.opt{display:flex;align-items:center;gap:14px;border:1px solid var(--hair);border-radius:13px;padding:15px;margin-bottom:10px;cursor:pointer}
+.opt .radio{width:22px;height:22px;border:2px solid #9A927F;border-radius:50%;flex:0 0 auto;display:grid;place-items:center}
+.opt.sel{border-color:var(--brand)} .opt.sel .radio{border-color:var(--brand)} .opt.sel .radio::after{content:"";width:11px;height:11px;border-radius:50%;background:var(--brand)}
+.opt span{font-size:15px;color:var(--ink)}
+.search{display:flex;align-items:center;gap:10px;border:1.5px solid var(--hair);border-radius:14px;padding:13px 15px;margin-bottom:6px;color:var(--ink3);font-size:14px}
+.dev{display:flex;align-items:center;gap:15px;padding:13px 0;cursor:pointer;border-bottom:1px solid var(--hair)}
+.dev .cbx{width:22px;height:22px;border:2px solid #9A927F;border-radius:5px;flex:0 0 auto;display:grid;place-items:center}
+.dev.sel .cbx{background:var(--brand);border-color:var(--brand);color:#fff;font-size:13px;font-weight:900}
+.dev b{font-size:16px;color:var(--ink);font-weight:700;display:block}
+.dev small{font-size:12px;color:var(--ink2)}
+.inp{border:1.5px solid var(--hair);border-radius:13px;padding:16px;font-size:15px;color:var(--ink3);margin-bottom:14px}
+.steps{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-direction:column;gap:14px}
+.steps li{display:flex;gap:11px;align-items:flex-start;font-size:14px;color:var(--ink);line-height:1.4}
+.steps .n{width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:13px;display:grid;place-items:center;flex:0 0 auto}
 </style>
 
 <div class="wrap">
-  <header class="top">
-    <div>
-      <p class="eyebrow">Wiom CSP · Partner App</p>
-      <h1 class="dv" data-hi="नेट बॉक्स बदलें — <span class='accent'>पूरा फ्लो</span>" data-en="NetBox Swap — <span class='accent'>End-to-End Flow</span>">नेट बॉक्स बदलें — <span class="accent">पूरा फ्लो</span></h1>
-      <p class="sub dv" data-hi="सर्विस टिकट से शुरू — सहायता → Wiom जांच → स्वैप के स्टेप → वेरिफिकेशन → नतीजा। हर स्क्रीन असली ऐप के dp पैमाने और Wiom DS टोकन पर बनी है।" data-en="From the service ticket — Help → Wiom जांच → swap steps → verification → outcome. Every screen is drawn at the app's real dp scale using Wiom DS tokens.">सर्विस टिकट से शुरू — सहायता → Wiom जांच → स्वैप के स्टेप → वेरिफिकेशन → नतीजा। हर स्क्रीन असली ऐप के dp पैमाने और Wiom DS टोकन पर बनी है।</p>
+  <div class="lead">
+    <p class="eyebrow">Wiom CSP · Interactive Prototype</p>
+    <h1 class="dv" data-hi="नेट बॉक्स बदलें" data-en="NetBox Swap">नेट बॉक्स बदलें</h1>
+    <p class="sub dv" data-hi="असली ऐप जैसा टैप-करने वाला प्रोटोटाइप। सर्विस टिकट के ⋮ → सहायता से शुरू करें और पूरा फ्लो चलाएं।" data-en="A tap-through replica of the live app. Start from the ticket's ⋮ → सहायता and walk the whole flow.">असली ऐप जैसा टैप-करने वाला प्रोटोटाइप। सर्विस टिकट के ⋮ → सहायता से शुरू करें और पूरा फ्लो चलाएं।</p>
+    <div class="seg" role="group" aria-label="Language"><button id="hi" aria-pressed="true">हिं</button><button id="en" aria-pressed="false">EN</button></div>
+    <div class="nav">
+      <h3 data-hi="स्क्रीन पर जाएं" data-en="Jump to screen">स्क्रीन पर जाएं</h3>
+      <div class="chips" id="chips"></div>
+      <h3 data-hi="जांच का नतीजा" data-en="जांच outcome">जांच का नतीजा</h3>
+      <div class="chips"><button class="chip on" data-oc="elig" onclick="setOutcome('elig',this)">सफल</button><button class="chip" data-oc="inelig" onclick="setOutcome('inelig',this)">नहीं कर सकते</button></div>
+      <h3 data-hi="वेरिफिकेशन का नतीजा" data-en="Verify outcome">वेरिफिकेशन का नतीजा</h3>
+      <div class="chips"><button class="chip on" data-vl="ok" onclick="setVL('ok',this)">वेरिफाई हुआ</button><button class="chip" data-vl="no" onclick="setVL('no',this)">नहीं हुआ</button><button class="chip" data-vl="fail" onclick="setVL('fail',this)">फेल</button></div>
+      <p class="hint dv" data-hi="फोन पर सीधे टैप करके भी चल सकते हैं — CTA, ⋮, सहायता सब काम करते हैं।" data-en="You can also tap directly on the phone — CTAs, ⋮ and सहायता all work.">फोन पर सीधे टैप करके भी चल सकते हैं — CTA, ⋮, सहायता सब काम करते हैं।</p>
     </div>
-    <div class="controls">
-      <div class="seg" role="group" aria-label="Language">
-        <button id="hi" aria-pressed="true">हिं</button>
-        <button id="en" aria-pressed="false">EN</button>
-      </div>
-    </div>
-  </header>
-
-  <div class="legend">
-    <span class="k"><span class="dot brand"></span> <b class="dv" data-hi="मुख्य क्रिया (पिंक CTA)" data-en="Primary action (pink CTA)">मुख्य क्रिया (पिंक CTA)</b></span>
-    <span class="k"><span class="dot pos"></span> <b class="dv" data-hi="सफल / आगे बढ़ें" data-en="Success / proceed">सफल / आगे बढ़ें</b></span>
-    <span class="k"><span class="dot neg"></span> <b class="dv" data-hi="रुकावट / फेल" data-en="Blocked / failed">रुकावट / फेल</b></span>
-    <span class="k"><span class="dot warn"></span> <b class="dv" data-hi="वेरिफाई नहीं हुआ" data-en="Not verified">वेरिफाई नहीं हुआ</b></span>
-    <span class="k" style="margin-left:auto"><span class="pill dv" data-hi="टैप करके ज़ूम करें" data-en="Tap a screen to zoom">टैप करके ज़ूम करें</span></span>
   </div>
 
-  <!-- ============ PHASE 0 : ENTRY ============ -->
-  <section class="phase">
-    <div class="phase-head"><span class="phase-num">0</span><div><h2 class="dv" data-hi="शुरुआत — सर्विस टिकट" data-en="Entry — Service ticket">शुरुआत — सर्विस टिकट</h2><p class="dv" data-hi="कनेक्शन में दिक्कत वाले टिकट के तीन-डॉट में “सहायता” से जांच शुरू होती है।" data-en="On a device-fault ticket, “Help” in the three-dot menu starts the जांच.">कनेक्शन में दिक्कत वाले टिकट के तीन-डॉट में “सहायता” से जांच शुरू होती है।</p></div></div>
-    <div class="lane">
-      <div class="step">
-        <div class="phone dv">
-          <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-          <div class="screen-body">
-            <div class="appbar appbar--maroon"><span class="ic">‹</span><span class="ttl">सर्विस ·<br>WBOX-abc-001</span><span class="kebab">⋮</span></div>
-            <div class="banner"><div class="ci">!</div><div><b data-hi="तुरंत ध्यान दें" data-en="Needs attention">तुरंत ध्यान दें</b><p data-hi="कनेक्शन में दिक्कत आ रही है" data-en="This connection has an issue">कनेक्शन में दिक्कत आ रही है</p></div></div>
-            <div class="row-info"><span class="k" data-hi="ज़रूरी जानकारी" data-en="Key info">ज़रूरी जानकारी</span><span class="chk">✓ [proof.auto_ping]: <span data-hi="पास" data-en="pass">पास</span></span></div>
-            <div class="row-info"><span class="k" data-hi="कहाँ जाना है?" data-en="Where to go?">कहाँ जाना है?</span>Sharma Dairy · Sector 8, Gurugram</div>
-            <div class="row-info"><span class="k" data-hi="संपर्क कैसे करें?" data-en="How to contact?">संपर्क कैसे करें?</span><span style="color:var(--brand);font-weight:700" data-hi="आप कॉल कर सकते हैं" data-en="You can call">आप कॉल कर सकते हैं</span></div>
-            <div class="cta-bar"><span class="cta cta--fill" data-hi="टीम को भेजें" data-en="Send to team">टीम को भेजें</span></div>
-          </div>
-        </div>
-        <div class="caption dv"><b data-hi="सर्विस टिकट" data-en="Service ticket">सर्विस टिकट</b><span data-hi="तीन-डॉट → सहायता से जांच शुरू" data-en="Three-dot → Help starts the जांच">तीन-डॉट → सहायता से जांच शुरू</span></div>
-      </div>
-      <span class="arrow">→</span>
-    </div>
-  </section>
+  <div class="stage">
+    <div class="device"><div class="screen dv" id="screen">
+      <div class="scrim" id="scrim" onclick="closeAll()"></div>
 
-  <!-- ============ PHASE 1 : ELIGIBILITY ============ -->
-  <section class="phase">
-    <div class="phase-head"><span class="phase-num">1</span><div><h2 class="dv" data-hi="Wiom जांच (Eligibility)" data-en="Wiom जांch (Eligibility gate)">Wiom जांच (Eligibility)</h2><p class="dv" data-hi="Wiom रिमोट जांच करता है कि नेट बॉक्स स्वैप ज़रूरी और मंज़ूर है या नहीं।" data-en="Wiom remotely checks whether a swap is needed and allowed.">Wiom रिमोट जांच करता है कि नेट बॉक्स स्वैप ज़रूरी और मंज़ूर है या नहीं।</p></div></div>
-    <div class="lane">
-      <div class="step">
-        <div class="phone dv">
-          <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-          <div class="screen-body">
-            <div class="appbar appbar--light"><span class="x">✕</span></div>
-            <div class="center"><div class="spin"></div><div class="h-title" data-hi="नेटबॉक्स की जांच चल रही है" data-en="Checking your NetBox">नेटबॉक्स की जांच चल रही है</div></div>
-          </div>
+      <!-- TICKET -->
+      <div class="pg" data-pg="ticket">
+        <div class="sbar onmaroon"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar maroon"><span class="ico">←</span><span class="ttl">सर्विस - WBOX-abc-001</span><span class="grow"></span><span class="ico" onclick="openMenu()">⋮</span></div>
+        <div class="body pad">
+          <div class="banner"><div class="ci">!</div><div><b data-hi="तुरंत ध्यान दें" data-en="Needs attention">तुरंत ध्यान दें</b><p data-hi="कनेक्शन में दिक्कत आ रही है" data-en="This connection has an issue">कनेक्शन में दिक्कत आ रही है</p></div></div>
+          <div class="sec"><div class="hd"><span class="ic">〜</span><b data-hi="अपडेट" data-en="Updates">अपडेट</b><span class="badge">1</span><span class="chev">⌄</span></div><div class="muted" data-hi="अभी कोई अपडेट नहीं" data-en="No updates yet">अभी कोई अपडेट नहीं</div></div>
+          <div class="hr"></div>
+          <div class="sec"><div class="hd"><span class="ic">ⓘ</span><b data-hi="ज़रूरी जानकारी" data-en="Key info">ज़रूरी जानकारी</b></div><div class="muted" data-hi="सेवा समस्या" data-en="Service issue">सेवा समस्या</div><div class="pass">✓ [proof.auto_ping]: <span data-hi="पास" data-en="pass">पास</span></div><div class="rowlink"><span data-hi="इस कनेक्शन की पिछली समस्याएं" data-en="Past issues on this connection">इस कनेक्शन की पिछली समस्याएं</span><span class="chev">⌄</span></div></div>
+          <div class="hr"></div>
+          <div class="sec"><div class="hd"><span class="ic">◎</span><b data-hi="कहाँ जाना है?" data-en="Where to go?">कहाँ जाना है?</b></div><div style="font-weight:700;color:var(--ink);font-size:14px;margin-top:6px">Sharma Dairy</div><div class="muted">H.No. 12, Vani Vihar · Sector 8, Gurugram, 122001</div><div class="pink" style="font-size:13px;margin-top:8px" data-hi="मैप पर लोकेशन देखें" data-en="View location on map">मैप पर लोकेशन देखें</div></div>
+          <div class="hr"></div>
+          <div class="sec"><div class="hd"><span class="ic">☏</span><b data-hi="संपर्क कैसे करें?" data-en="How to contact?">संपर्क कैसे करें?</b></div><div class="pink" style="font-size:13px;margin-top:6px" data-hi="आप कॉल कर सकते हैं" data-en="You can call">आप कॉल कर सकते हैं</div></div>
         </div>
-        <div class="caption dv"><b data-hi="जांच (≈5 सेकंड)" data-en="Checking (≈5s)">जांच (≈5 सेकंड)</b><span data-hi="Wiom रिमोट वेरिफिकेशन" data-en="Wiom remote verification">Wiom रिमोट वेरिफिकेशन</span></div>
-      </div>
-      <span class="arrow">→</span>
-      <div class="branch">
-        <div class="branch-row">
-          <span class="tag pos" data-hi="स्वैप ज़रूरी" data-en="Swap needed">स्वैप ज़रूरी</span>
-          <div class="step">
-            <div class="phone dv">
-              <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-              <div class="screen-body">
-                <div class="appbar appbar--light"><span class="x">✕</span></div>
-                <div class="center upper">
-                  <div class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="#008043" stroke-width="1.9"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l2.5 2.5L16 9"/></svg></div>
-                  <div class="h-lg" data-hi="जांच सफल रही" data-en="Check successful">जांच सफल रही</div>
-                  <div class="h-sub" data-hi="आप नेटबॉक्स स्वैप कर सकते हैं" data-en="You can swap the NetBox">आप नेटबॉक्स स्वैप कर सकते हैं</div>
-                </div>
-                <div class="cta-bar"><span class="cta cta--fill" data-hi="आगे बढ़ें" data-en="Continue">आगे बढ़ें</span></div>
-              </div>
-            </div>
-            <div class="caption dv"><b data-hi="जांच सफल" data-en="Eligible">जांच सफल</b><span data-hi="“आगे बढ़ें” → स्वैप फ्लो (अब auto नहीं)" data-en="“Continue” → swap flow (no auto-jump)">“आगे बढ़ें” → स्वैप फ्लो (अब auto नहीं)</span></div>
-          </div>
-        </div>
-        <div class="branch-row">
-          <span class="tag neg" data-hi="स्वैप नहीं" data-en="Not needed">स्वैप नहीं</span>
-          <div class="step">
-            <div class="phone dv">
-              <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-              <div class="screen-body">
-                <div class="appbar appbar--light"><span class="x">✕</span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-                <div class="center upper">
-                  <div class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="#D92130" stroke-width="1.9"><circle cx="12" cy="12" r="10"/><path d="M12 7v6"/><circle cx="12" cy="16.4" r="1.05" fill="#D92130" stroke="none"/></svg></div>
-                  <div class="h-lg" data-hi="आप नेटबॉक्स स्वैप नहीं कर सकते हैं" data-en="You cannot swap the NetBox">आप नेटबॉक्स स्वैप नहीं कर सकते हैं</div>
-                  <div class="h-sub" data-hi="आपका नेटबॉक्स अभी सही से काम कर रहा है" data-en="Your NetBox is currently working fine">आपका नेटबॉक्स अभी सही से काम कर रहा है</div>
-                </div>
-                <div class="cta-bar"><span class="cta cta--text" data-hi="ठीक है" data-en="OK">ठीक है</span></div>
-              </div>
-            </div>
-            <div class="caption dv"><b data-hi="स्वैप की ज़रूरत नहीं" data-en="Not eligible">स्वैप की ज़रूरत नहीं</b><span data-hi="“ठीक है” → वापस टिकट पर" data-en="“OK” → back to the ticket">“ठीक है” → वापस टिकट पर</span></div>
-          </div>
+        <div class="ctabar"><button class="btn fill" data-hi="टीम को भेजें" data-en="Send to team">टीम को भेजें</button></div>
+        <!-- material menu -->
+        <div class="menu" id="menu">
+          <div class="mi" onclick="closeAll();go('intro')" data-hi="नेट बॉक्स बदलना है" data-en="Swap NetBox">नेट बॉक्स बदलना है</div>
+          <div class="mdiv"></div>
+          <div class="mi" onclick="closeAll();startJaanch()" data-hi="सहायता" data-en="Help">सहायता</div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ============ PHASE 2 : SWAP STEPS ============ -->
-  <section class="phase">
-    <div class="phase-head"><span class="phase-num">2</span><div><h2 class="dv" data-hi="स्वैप के स्टेप" data-en="Swap steps">स्वैप के स्टेप</h2><p class="dv" data-hi="नया नेट बॉक्स स्कैन → लगाएं → वेरिफाई। स्कैन फेल होने पर लिस्ट/मैनुअल fallback।" data-en="Scan new → install → verify. Fallback to picker/manual entry if scan fails.">नया नेट बॉक्स स्कैन → लगाएं → वेरिफाई। स्कैन फेल होने पर लिस्ट/मैनुअल fallback।</p></div></div>
-    <div class="lane">
-      <div class="step">
-        <div class="phone dv">
-          <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-          <div class="screen-body">
-            <div class="appbar appbar--light"><span class="x">✕</span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-            <div class="prog">
-              <div class="track"><div class="node on"></div><div class="seg"></div><div class="node"></div><div class="seg"></div><div class="node"></div><div class="seg"></div><div class="node"></div></div>
-              <div class="labels"><span class="on" data-hi="नया स्कैन" data-en="Scan new">नया स्कैन</span><span data-hi="लगाएं" data-en="Install">लगाएं</span><span data-hi="वेरिफाई" data-en="Verify">वेरिफाई</span><span data-hi="तैयार" data-en="Ready">तैयार</span></div>
-            </div>
-            <div class="center">
-              <div class="halo"><svg viewBox="0 0 24 24" fill="none" stroke="#D9008D" stroke-width="1.7"><rect x="3" y="13" width="18" height="6" rx="1.5"/><circle cx="7" cy="16" r="1" fill="#D9008D"/><path d="M12 9a4 4 0 0 1 4 4M12 6a7 7 0 0 1 7 7" stroke-linecap="round"/></svg></div>
-              <div class="h-title" data-hi="नेट बॉक्स बदलें" data-en="Swap NetBox">नेट बॉक्स बदलें</div>
-              <div class="h-sub" data-hi="यह प्रक्रिया आपको स्टेप-बाय-स्टेप पूरी करनी है" data-en="Complete this process step by step">यह प्रक्रिया आपको स्टेप-बाय-स्टेप पूरी करनी है</div>
-            </div>
-            <div class="cta-bar"><span class="cta cta--fill" data-hi="नेटबॉक्स बदलने की प्रक्रिया शुरू करें" data-en="Start NetBox swap">नेटबॉक्स बदलने की प्रक्रिया शुरू करें</span></div>
-          </div>
-        </div>
-        <div class="caption dv"><b data-hi="इंट्रो" data-en="Intro">इंट्रो</b><span data-hi="4-स्टेप ओवरव्यू" data-en="4-step overview">4-स्टेप ओवरव्यू</span></div>
+      <!-- CHECKING -->
+      <div class="pg" data-pg="checking">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
+        <div class="center"><div class="spin"></div><div class="htitle" data-hi="नेटबॉक्स की जांच चल रही है" data-en="Checking your NetBox">नेटबॉक्स की जांच चल रही है</div></div>
       </div>
-      <span class="arrow">→</span>
-      <div class="step">
-        <div class="phone dv">
-          <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-          <div class="screen-body">
-            <div class="appbar appbar--light"><span class="x">✕</span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-            <div class="prog">
-              <div class="track"><div class="node on"></div><div class="seg"></div><div class="node"></div><div class="seg"></div><div class="node"></div><div class="seg"></div><div class="node"></div></div>
-              <div class="labels"><span class="on" data-hi="नया स्कैन" data-en="Scan new">नया स्कैन</span><span data-hi="लगाएं" data-en="Install">लगाएं</span><span data-hi="वेरिफाई" data-en="Verify">वेरिफाई</span><span data-hi="तैयार" data-en="Ready">तैयार</span></div>
-            </div>
-            <div class="viewfinder"><span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span><span class="qr"></span></div>
-            <div class="center" style="flex:0;padding-top:22px;gap:8px">
-              <div class="h-title" data-hi="नया नेट बॉक्स स्कैन करें" data-en="Scan new NetBox">नया नेट बॉक्स स्कैन करें</div>
-              <div class="h-sub" data-hi="नेटबॉक्स ID को स्कैन के बीच रखें" data-en="Place the NetBox ID in the scan area">नेटबॉक्स ID को स्कैन के बीच रखें</div>
-            </div>
-            <div class="cta-bar"><span class="cta cta--text" data-hi="स्कैन नहीं हो रहा?" data-en="Not scanning?">स्कैन नहीं हो रहा?</span></div>
-          </div>
-        </div>
-        <div class="caption dv"><b data-hi="नया डिवाइस स्कैन" data-en="Scan new device">नया डिवाइस स्कैन</b><span data-hi="QR / नेट बॉक्स ID" data-en="QR / NetBox ID">QR / नेट बॉक्स ID</span></div>
-      </div>
-      <span class="arrow">→</span>
-      <div class="step">
-        <div class="phone dv">
-          <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-          <div class="screen-body">
-            <div class="appbar appbar--light"><span class="x">✕</span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-            <div class="center">
-              <div class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="#008043" stroke-width="1.9"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l2.5 2.5L16 9"/></svg></div>
-              <div class="h-title" data-hi="नया नेट बॉक्स बदलने के लिए रेडी है" data-en="New NetBox is ready for swap">नया नेट बॉक्स बदलने के लिए रेडी है</div>
-            </div>
-            <div class="cta-bar"><span class="cta cta--fill" data-hi="आगे बढ़ें" data-en="Continue">आगे बढ़ें</span></div>
-          </div>
-        </div>
-        <div class="caption dv"><b data-hi="स्कैन सफल" data-en="Scan success">स्कैन सफल</b><span data-hi="डिवाइस पहचान लिया" data-en="Device recognised">डिवाइस पहचान लिया</span></div>
-      </div>
-      <span class="arrow">→</span>
-      <div class="step">
-        <div class="phone dv">
-          <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-          <div class="screen-body">
-            <div class="appbar appbar--light"><span class="x">✕</span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-            <div class="prog">
-              <div class="track"><div class="node done"></div><div class="seg done"></div><div class="node on"></div><div class="seg"></div><div class="node"></div><div class="seg"></div><div class="node"></div></div>
-              <div class="labels"><span data-hi="नया स्कैन" data-en="Scan new">नया स्कैन</span><span class="on" data-hi="लगाएं" data-en="Install">लगाएं</span><span data-hi="वेरिफाई" data-en="Verify">वेरिफाई</span><span data-hi="तैयार" data-en="Ready">तैयार</span></div>
-            </div>
-            <div class="pad" style="margin-top:18px"><div class="h-title" style="font-size:20px" data-hi="अब नया नेट बॉक्स लगाएं" data-en="Now install the new NetBox">अब नया नेट बॉक्स लगाएं</div></div>
-            <ul class="steps">
-              <li><span class="n">1</span><span data-hi="नया नेट बॉक्स बिजली से कनेक्ट करें" data-en="Plug the new NetBox into power">नया नेट बॉक्स बिजली से कनेक्ट करें</span></li>
-              <li><span class="n">2</span><span data-hi="LAN केबल पुराने से निकालकर नए में लगाएं" data-en="Move the LAN cable to the new one">LAN केबल पुराने से निकालकर नए में लगाएं</span></li>
-              <li><span class="n">3</span><span data-hi="वेब पोर्टल खोलकर प्रोसेस पूरा करें" data-en="Open the web portal and finish there">वेब पोर्टल खोलकर प्रोसेस पूरा करें</span></li>
-            </ul>
-            <div class="portal" data-hi="वेब पोर्टल खोलें" data-en="Open web portal">वेब पोर्टल खोलें</div>
-            <div class="cta-bar"><span class="cta cta--fill" data-hi="मैंने नेट बॉक्स बदल दिया है" data-en="I've swapped the NetBox">मैंने नेट बॉक्स बदल दिया है</span></div>
-          </div>
-        </div>
-        <div class="caption dv"><b data-hi="नेट बॉक्स लगाएं" data-en="Physical setup">नेट बॉक्स लगाएं</b><span data-hi="बिजली · LAN · पोर्टल" data-en="Power · LAN · portal">बिजली · LAN · पोर्टल</span></div>
-      </div>
-    </div>
 
-    <div class="lane" style="margin-top:30px">
-      <div class="step">
-        <div class="sheet dv">
-          <div class="grab"></div>
-          <div class="body">
-            <h4 data-hi="नया नेट बॉक्स चुनें" data-en="Select a replacement NetBox">नया नेट बॉक्स चुनें</h4>
-            <p data-hi="स्कैन नहीं हो पाया — लिस्ट से चुनें" data-en="Scan failed — pick from the list">स्कैन नहीं हो पाया — लिस्ट से चुनें</p>
-            <div class="opt sel">NB-REP-1001</div><div class="opt">NB-REP-1002</div><div class="opt">NB-REP-2045</div>
-            <span class="cta cta--fill" style="margin-top:4px" data-hi="यह नेट बॉक्स चुनें" data-en="Select this NetBox">यह नेट बॉक्स चुनें</span>
-          </div>
-        </div>
-        <div class="caption dv"><b data-hi="Fallback · डिवाइस पिकर" data-en="Fallback · Device picker">Fallback · डिवाइस पिकर</b><span data-hi="3 बार स्कैन फेल पर" data-en="After 3 failed scans">3 बार स्कैन फेल पर</span></div>
+      <!-- SUCCESS (jaanch) -->
+      <div class="pg" data-pg="success">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
+        <div class="center up"><div class="gcircle g">✓</div><div class="hlg" data-hi="जांच सफल रही" data-en="Check successful">जांच सफल रही</div><div class="hsub" data-hi="आप नेटबॉक्स स्वैप कर सकते हैं" data-en="You can swap the NetBox">आप नेटबॉक्स स्वैप कर सकते हैं</div></div>
+        <div class="ctabar"><button class="btn fill" onclick="go('intro')" data-hi="आगे बढ़ें" data-en="Continue">आगे बढ़ें</button></div>
       </div>
-      <div class="step">
-        <div class="sheet dv">
-          <div class="grab"></div>
-          <div class="body">
-            <h4 data-hi="नेट बॉक्स स्कैन नहीं हो रहा" data-en="NetBox isn't scanning">नेट बॉक्स स्कैन नहीं हो रहा</h4>
-            <p data-hi="नेट बॉक्स ID टाइप करें" data-en="Type the NetBox ID">नेट बॉक्स ID टाइप करें</p>
-            <div class="inputbox">NB-________</div>
-            <span class="cta cta--fill" data-hi="कन्फर्म करें" data-en="Confirm">कन्फर्म करें</span>
-          </div>
-        </div>
-        <div class="caption dv"><b data-hi="Fallback · मैनुअल एंट्री" data-en="Fallback · Manual entry">Fallback · मैनुअल एंट्री</b><span data-hi="ID + फोटो वेरिफिकेशन" data-en="ID + photo verification">ID + फोटो वेरिफिकेशन</span></div>
-      </div>
-    </div>
-  </section>
 
-  <!-- ============ PHASE 3 : VERIFY + OUTCOME ============ -->
-  <section class="phase">
-    <div class="phase-head"><span class="phase-num">3</span><div><h2 class="dv" data-hi="वेरिफिकेशन और नतीजा" data-en="Verification & outcome">वेरिफिकेशन और नतीजा</h2><p class="dv" data-hi="सिस्टम जांचता है कि नया चालू है और पुराना बंद। फिर सफल / वेरिफाई नहीं / फेल।" data-en="System confirms new is live and old is off. Then success / not-verified / failed.">सिस्टम जांचता है कि नया चालू है और पुराना बंद। फिर सफल / वेरिफाई नहीं / फेल।</p></div></div>
-    <div class="lane">
-      <div class="step">
-        <div class="phone dv">
-          <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-          <div class="screen-body">
-            <div class="appbar appbar--light"><span class="x">✕</span></div>
-            <div class="center"><div class="spin"></div><div class="h-title" data-hi="स्वैप शुरू हो रहा है" data-en="Initiating swap">स्वैप शुरू हो रहा है</div><div class="h-sub" data-hi="गेट चेक और डिवाइस वैलिडेशन चल रहा है। ऐप बंद न करें।" data-en="Running gate checks and device validation. Don't close the app.">गेट चेक और डिवाइस वैलिडेशन चल रहा है। ऐप बंद न करें।</div></div>
-          </div>
-        </div>
-        <div class="caption dv"><b data-hi="प्रोसेसिंग" data-en="Processing">प्रोसेसिंग</b><span data-hi="गेट चेक" data-en="Gate check">गेट चेक</span></div>
+      <!-- NOT ELIGIBLE -->
+      <div class="pg" data-pg="inelig">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
+        <div class="center up"><div class="gcircle r">!</div><div class="hlg" data-hi="आप नेटबॉक्स स्वैप नहीं कर सकते हैं" data-en="You cannot swap the NetBox">आप नेटबॉक्स स्वैप नहीं कर सकते हैं</div><div class="hsub" data-hi="आपका नेटबॉक्स अभी सही से काम कर रहा है" data-en="Your NetBox is currently working fine">आपका नेटबॉक्स अभी सही से काम कर रहा है</div></div>
+        <div class="ctabar"><button class="btn text" onclick="go('ticket')" data-hi="ठीक है" data-en="OK">ठीक है</button></div>
       </div>
-      <span class="arrow">→</span>
-      <div class="step">
-        <div class="phone dv">
-          <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-          <div class="screen-body">
-            <div class="appbar appbar--light"><span class="x">✕</span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-            <div class="prog">
-              <div class="track"><div class="node done"></div><div class="seg done"></div><div class="node done"></div><div class="seg done"></div><div class="node on"></div><div class="seg"></div><div class="node"></div></div>
-              <div class="labels"><span data-hi="नया स्कैन" data-en="Scan new">नया स्कैन</span><span data-hi="लगाएं" data-en="Install">लगाएं</span><span class="on" data-hi="वेरिफाई" data-en="Verify">वेरिफाई</span><span data-hi="तैयार" data-en="Ready">तैयार</span></div>
-            </div>
-            <div class="center"><div class="ring"><div class="in">02:14</div></div><div class="h-title" data-hi="नेट बॉक्स वेरिफाई हो रहा है…" data-en="Verifying swap…">नेट बॉक्स वेरिफाई हो रहा है…</div><div class="h-sub" data-hi="सिस्टम जांच रहा है कि नया चालू है और पुराना बंद। ऐप बंद न करें।" data-en="Checking the new device is live and the old one is off. Don't close the app.">सिस्टम जांच रहा है कि नया चालू है और पुराना बंद। ऐप बंद न करें।</div></div>
-          </div>
-        </div>
-        <div class="caption dv"><b data-hi="वेरिफिकेशन (काउंटडाउन)" data-en="Verifying (countdown)">वेरिफिकेशन (काउंटडाउन)</b><span data-hi="VL पिंग जांच" data-en="VL ping check">VL पिंग जांच</span></div>
-      </div>
-      <span class="arrow">→</span>
-      <div class="branch">
-        <div class="branch-row">
-          <span class="tag pos" data-hi="वेरिफाई हुआ" data-en="Verified">वेरिफाई हुआ</span>
-          <div class="step">
-            <div class="phone dv">
-              <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-              <div class="screen-body">
-                <div class="appbar appbar--light"><span class="x">✕</span></div>
-                <div class="prog">
-                  <div class="track"><div class="node done"></div><div class="seg done"></div><div class="node done"></div><div class="seg done"></div><div class="node done"></div><div class="seg done"></div><div class="node done"></div></div>
-                  <div class="labels"><span data-hi="नया स्कैन" data-en="Scan new">नया स्कैन</span><span data-hi="लगाएं" data-en="Install">लगाएं</span><span data-hi="वेरिफाई" data-en="Verify">वेरिफाई</span><span class="on" data-hi="तैयार" data-en="Ready">तैयार</span></div>
-                </div>
-                <div class="center">
-                  <div class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="#008043" stroke-width="1.9"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l2.5 2.5L16 9"/></svg></div>
-                  <div class="h-lg" data-hi="नेट बॉक्स बदल गया!" data-en="NetBox swapped!">नेट बॉक्स बदल गया!</div>
-                  <div class="h-sub" data-hi="नया नेट बॉक्स चालू है। अब सर्विस टिकट रिज़ॉल्व करें।" data-en="The new NetBox is live. Now resolve the ticket.">नया नेट बॉक्स चालू है। अब सर्विस टिकट रिज़ॉल्व करें।</div>
-                </div>
-                <div class="reminder" data-hi="पुराना नेट बॉक्स ऑफिस में जमा करना न भूलें" data-en="Don't forget to return the old NetBox">पुराना नेट बॉक्स ऑफिस में जमा करना न भूलें</div>
-                <div class="cta-bar" style="margin-top:0"><span class="cta cta--fill" data-hi="सर्विस टिकट खोलें" data-en="Open service ticket">सर्विस टिकट खोलें</span></div>
-              </div>
-            </div>
-            <div class="caption dv"><b data-hi="स्वैप सफल" data-en="Swap success">स्वैप सफल</b><span data-hi="टिकट रिज़ॉल्व करें" data-en="Resolve the ticket">टिकट रिज़ॉल्व करें</span></div>
-          </div>
-        </div>
-        <div class="branch-row">
-          <span class="tag neg" data-hi="वेरिफाई नहीं" data-en="Not verified">वेरिफाई नहीं</span>
-          <div class="step">
-            <div class="phone dv">
-              <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-              <div class="screen-body">
-                <div class="appbar appbar--light"><span class="x">✕</span></div>
-                <div class="center upper">
-                  <div class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="#E88C1A" stroke-width="1.9"><circle cx="12" cy="12" r="10"/><path d="M12 7v6"/><circle cx="12" cy="16.4" r="1.05" fill="#E88C1A" stroke="none"/></svg></div>
-                  <div class="h-lg" data-hi="स्वैप वेरिफाई नहीं हुआ" data-en="Swap not verified">स्वैप वेरिफाई नहीं हुआ</div>
-                  <div class="h-sub" data-hi="नया नेट बॉक्स अभी चालू नहीं हुआ या पुराना अभी भी ऑन है।" data-en="The new NetBox isn't online yet, or the old one is still on.">नया नेट बॉक्स अभी चालू नहीं हुआ या पुराना अभी भी ऑन है।</div>
-                </div>
-                <div class="cta-bar"><span class="cta cta--fill" data-hi="दोबारा कोशिश करें" data-en="Try again">दोबारा कोशिश करें</span><div style="height:10px"></div><span class="cta cta--text" data-hi="मेरी तरफ से हो गया" data-en="Done from my side">मेरी तरफ से हो गया</span></div>
-              </div>
-            </div>
-            <div class="caption dv"><b data-hi="वेरिफाई नहीं हुआ" data-en="Not verified">वेरिफाई नहीं हुआ</b><span data-hi="रिट्राई या सेल्फ-कन्फर्म" data-en="Retry or self-confirm">रिट्राई या सेल्फ-कन्फर्म</span></div>
-          </div>
-          <div class="step">
-            <div class="phone dv">
-              <div class="status"><span>2:47</span><span class="r">📶 LTE ▪ 88%</span></div>
-              <div class="screen-body">
-                <div class="appbar appbar--light"><span class="x">✕</span></div>
-                <div class="center upper">
-                  <div class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="#D92130" stroke-width="1.9"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>
-                  <div class="h-lg" data-hi="कुछ गड़बड़ हो गई" data-en="Something went wrong">कुछ गड़बड़ हो गई</div>
-                  <div class="h-sub" data-hi="स्वैप पूरा नहीं हो पाया। Wiom ops टीम को भेज दिया गया है।" data-en="The swap could not be completed. Escalated to the Wiom ops team.">स्वैप पूरा नहीं हो पाया। Wiom ops टीम को भेज दिया गया है।</div>
-                </div>
-                <div class="cta-bar"><span class="cta cta--text" data-hi="बंद करें" data-en="Close">बंद करें</span></div>
-              </div>
-            </div>
-            <div class="caption dv"><b data-hi="फेल (escalate)" data-en="Failed (escalate)">फेल (escalate)</b><span data-hi="रिट्राई खत्म → ops टीम" data-en="Retries exhausted → ops">रिट्राई खत्म → ops टीम</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <footer>
-    <span class="dv" data-hi="Wiom CSP · नेट बॉक्स स्वैप — डिज़ाइन रिव्यू प्रोटोटाइप" data-en="Wiom CSP · NetBox Swap — design-review prototype">Wiom CSP · नेट बॉक्स स्वैप — डिज़ाइन रिव्यू प्रोटोटाइप</span>
-    <span class="dv" data-hi="फाइनल होने पर Figma में जाएगा" data-en="Moves to Figma once finalized">फाइनल होने पर Figma में जाएगा</span>
-  </footer>
+      <!-- INTRO -->
+      <div class="pg" data-pg="intro">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
+        <div id="prog-intro"></div>
+        <div class="center">
+          <div class="halo"><div class="router"><div class="wv" style="width:26px;height:26px;bottom:32px"></div><div class="wv" style="width:42px;height:42px;bottom:32px"></div><span class="ant"></span><div class="rbody"></div><span class="led" style="left:20px"></span><span class="led" style="left:31px"></span><span class="led" style="left:42px"></span></div></div>
+          <div class="htitle" data-hi="नेट बॉक्स बदलें" data-en="Swap NetBox">नेट बॉक्स बदलें</div>
+          <div class="hsub" data-hi="यह प्रक्रिया आपको स्टेप-बाय-स्टेप पूरी करनी है" data-en="Complete this process step by step">यह प्रक्रिया आपको स्टेप-बाय-स्टेप पूरी करनी है</div>
+        </div>
+        <div class="ctabar"><button class="btn fill" onclick="openSheet('reason')" data-hi="नेटबॉक्स बदलने की प्रक्रिया शुरू करें" data-en="Start NetBox swap">नेटबॉक्स बदलने की प्रक्रिया शुरू करें</button></div>
+      </div>
+
+      <!-- SCAN -->
+      <div class="pg" data-pg="scan">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
+        <div id="prog-scan"></div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 24px;gap:14px">
+          <div class="vf"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><div class="qr"></div></div>
+          <div class="htitle" data-hi="नया नेट बॉक्स स्कैन करें" data-en="Scan new NetBox">नया नेट बॉक्स स्कैन करें</div>
+          <div class="hsub" data-hi="नेटबॉक्स ID को स्कैन के बीच रखें" data-en="Place the NetBox ID in the scan area">नेटबॉक्स ID को स्कैन के बीच रखें</div>
+        </div>
+        <div class="ctabar"><button class="btn fill" onclick="go('scansuccess')" data-hi="स्कैन हुआ (डेमो)" data-en="Scanned (demo)">स्कैन हुआ (डेमो)</button><button class="btn text" onclick="openSheet('picker')" data-hi="स्कैन नहीं हो रहा?" data-en="Not scanning?">स्कैन नहीं हो रहा?</button></div>
+      </div>
+
+      <!-- SCAN SUCCESS -->
+      <div class="pg" data-pg="scansuccess">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
+        <div class="center"><div class="gcircle g">✓</div><div class="htitle" data-hi="नया नेट बॉक्स बदलने के लिए रेडी है" data-en="New NetBox is ready for swap">नया नेट बॉक्स बदलने के लिए रेडी है</div></div>
+        <div class="ctabar"><button class="btn fill" onclick="go('physical')" data-hi="आगे बढ़ें" data-en="Continue">आगे बढ़ें</button></div>
+      </div>
+
+      <!-- PHYSICAL -->
+      <div class="pg" data-pg="physical">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
+        <div id="prog-physical"></div>
+        <div class="body pad">
+          <div class="hlg" style="font-size:18px" data-hi="अब नया नेट बॉक्स लगाएं" data-en="Now install the new NetBox">अब नया नेट बॉक्स लगाएं</div>
+          <div class="hsub" style="margin-top:4px" data-hi="नीचे दिए गए स्टेप पूरे करें, फिर वापस आकर कन्फर्म करें" data-en="Complete the steps below, then come back and confirm">नीचे दिए गए स्टेप पूरे करें, फिर वापस आकर कन्फर्म करें</div>
+          <ul class="steps">
+            <li><span class="n">1</span><span data-hi="नया नेट बॉक्स बिजली से कनेक्ट करें" data-en="Plug the new NetBox into power">नया नेट बॉक्स बिजली से कनेक्ट करें</span></li>
+            <li><span class="n">2</span><span data-hi="पुराने नेट बॉक्स से LAN केबल निकालकर नए नेट बॉक्स में लगाएं" data-en="Move the LAN cable from the old NetBox to the new one">पुराने नेट बॉक्स से LAN केबल निकालकर नए नेट बॉक्स में लगाएं</span></li>
+            <li><span class="n">3</span><span data-hi="वेब पोर्टल खोलकर दिया गया प्रोसेस पूरा करें" data-en="Open the web portal and complete the process there">वेब पोर्टल खोलकर दिया गया प्रोसेस पूरा करें</span></li>
+            <li><span class="n">4</span><span data-hi="सब हो जाने पर यहाँ वापस आकर नीचे कन्फर्म करें" data-en="Once done, come back here and confirm below">सब हो जाने पर यहाँ वापस आकर नीचे कन्फर्म करें</span></li>
+          </ul>
+          <div class="inp" style="margin-top:16px" data-hi="जांच में क्या मिला (वैकल्पिक)" data-en="Diagnosis notes (optional)">जांच में क्या मिला (वैकल्पिक)</div>
+        </div>
+        <div class="ctabar"><button class="btn fill" onclick="startProcessing()" data-hi="मैंने नेट बॉक्स बदल दिया है" data-en="I've swapped the NetBox">मैंने नेट बॉक्स बदल दिया है</button></div>
+      </div>
+
+      <!-- PROCESSING -->
+      <div class="pg" data-pg="processing">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
+        <div class="center"><div class="spin"></div><div class="htitle" data-hi="स्वैप शुरू हो रहा है" data-en="Initiating swap">स्वैप शुरू हो रहा है</div><div class="hsub" data-hi="गेट चेक और डिवाइस वैलिडेशन चल रहा है। ऐप बंद न करें।" data-en="Running gate checks and device validation. Don't close the app.">गेट चेक और डिवाइस वैलिडेशन चल रहा है। ऐप बंद न करें।</div></div>
+      </div>
+
+      <!-- VERIFYING -->
+      <div class="pg" data-pg="verifying">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
+        <div id="prog-verifying"></div>
+        <div class="center"><div class="ring"><div class="in" id="cd">02:14</div></div><div class="htitle" data-hi="नेट बॉक्स वेरिफाई हो रहा है…" data-en="Verifying swap…">नेट बॉक्स वेरिफाई हो रहा है…</div><div class="hsub" data-hi="सिस्टम जांच रहा है कि नया चालू है और पुराना बंद। ऐप बंद न करें।" data-en="Checking the new device is live and the old one is off. Don't close the app.">सिस्टम जांच रहा है कि नया चालू है और पुराना बंद। ऐप बंद न करें।</div></div>
+      </div>
+
+      <!-- SWAP SUCCESS -->
+      <div class="pg" data-pg="swapok">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
+        <div id="prog-swapok"></div>
+        <div class="center"><div class="gcircle g">✓</div><div class="hlg" data-hi="नेट बॉक्स बदल गया!" data-en="NetBox swapped!">नेट बॉक्स बदल गया!</div><div class="hsub" data-hi="नया नेट बॉक्स चालू है। अब सर्विस टिकट रिज़ॉल्व करें।" data-en="The new NetBox is live. Now resolve the ticket.">नया नेट बॉक्स चालू है। अब सर्विस टिकट रिज़ॉल्व करें।</div></div>
+        <div class="reminder" data-hi="पुराना नेट बॉक्स ऑफिस में जमा करना न भूलें" data-en="Don't forget to return the old NetBox">पुराना नेट बॉक्स ऑफिस में जमा करना न भूलें</div>
+        <div class="ctabar"><button class="btn fill" onclick="go('ticket')" data-hi="सर्विस टिकट खोलें" data-en="Open service ticket">सर्विस टिकट खोलें</button></div>
+      </div>
+
+      <!-- NOT VERIFIED -->
+      <div class="pg" data-pg="notverified">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
+        <div class="center up"><div class="gcircle a">!</div><div class="hlg" data-hi="स्वैप वेरिफाई नहीं हुआ" data-en="Swap not verified">स्वैप वेरिफाई नहीं हुआ</div><div class="hsub" data-hi="नया नेट बॉक्स अभी चालू नहीं हुआ या पुराना अभी भी ऑन है।" data-en="The new NetBox isn't online yet, or the old one is still on.">नया नेट बॉक्स अभी चालू नहीं हुआ या पुराना अभी भी ऑन है।</div></div>
+        <div class="ctabar"><button class="btn fill" onclick="startVerifying()" data-hi="दोबारा कोशिश करें" data-en="Try again">दोबारा कोशिश करें</button><button class="btn text" onclick="go('swapok')" data-hi="मेरी तरफ से हो गया" data-en="Done from my side">मेरी तरफ से हो गया</button></div>
+      </div>
+
+      <!-- FAILED -->
+      <div class="pg" data-pg="failed">
+        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
+        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
+        <div class="center up"><div class="gcircle r">✕</div><div class="hlg" data-hi="कुछ गड़बड़ हो गई" data-en="Something went wrong">कुछ गड़बड़ हो गई</div><div class="hsub" data-hi="स्वैप पूरा नहीं हो पाया। Wiom ops टीम को भेज दिया गया है।" data-en="The swap could not be completed. Escalated to the Wiom ops team.">स्वैप पूरा नहीं हो पाया। Wiom ops टीम को भेज दिया गया है।</div></div>
+        <div class="ctabar"><button class="btn text" onclick="go('ticket')" data-hi="बंद करें" data-en="Close">बंद करें</button></div>
+      </div>
+
+      <!-- SHEET: reason -->
+      <div class="sheet" id="sheet-reason">
+        <div class="grab"></div>
+        <div class="sbody">
+          <h4 data-hi="नेट बॉक्स बदलने का कारण चुनें" data-en="Choose a reason for the swap">नेट बॉक्स बदलने का कारण चुनें</h4>
+          <p class="ssub" data-hi="एक कारण चुनें ताकि हम आगे की प्रक्रिया शुरू कर सकें" data-en="Pick one so we can start the process">एक कारण चुनें ताकि हम आगे की प्रक्रिया शुरू कर सकें</p>
+          <div class="opt" onclick="pickReason(this)"><span class="radio"></span><span data-hi="नेट बॉक्स खराब या टूटा हुआ" data-en="Device hardware fault">नेट बॉक्स खराब या टूटा हुआ</span></div>
+          <div class="opt" onclick="pickReason(this)"><span class="radio"></span><span data-hi="नेट बॉक्स में सॉफ्टवेयर की दिक्कत" data-en="Device software issue">नेट बॉक्स में सॉफ्टवेयर की दिक्कत</span></div>
+          <div class="opt" onclick="pickReason(this)"><span class="radio"></span><span data-hi="नेट बॉक्स कनेक्ट नहीं हो रहा" data-en="Device connectivity issue">नेट बॉक्स कनेक्ट नहीं हो रहा</span></div>
+        </div>
+      </div>
+
+      <!-- SHEET: device picker -->
+      <div class="sheet" id="sheet-picker">
+        <div class="grab"></div>
+        <div class="sbody">
+          <h4 data-hi="नया नेट बॉक्स चुनें" data-en="Select a replacement NetBox">नया नेट बॉक्स चुनें</h4>
+          <p class="ssub" data-hi="स्कैन नहीं हो पाया — नीचे दी गई लिस्ट से नया नेट बॉक्स चुनें" data-en="Scan failed — pick a replacement from the list below">स्कैन नहीं हो पाया — नीचे दी गई लिस्ट से नया नेट बॉक्स चुनें</p>
+          <div class="search">⌕ <span data-hi="नेट बॉक्स ID से खोजें" data-en="Search by NetBox ID">नेट बॉक्स ID से खोजें</span></div>
+          <div id="devlist"></div>
+          <button class="btn fill" style="margin-top:12px" onclick="closeAll();go('physical')" data-hi="यह नेट बॉक्स चुनें" data-en="Select this NetBox">यह नेट बॉक्स चुनें</button>
+        </div>
+      </div>
+    </div></div>
+    <button class="restart dv" onclick="go('ticket');resetOutcomes()" data-hi="↻ शुरू से" data-en="↻ Restart">↻ शुरू से</button>
+  </div>
 </div>
 
-<div class="modal" id="modal"><button class="close" aria-label="Close">✕</button><div class="stage" id="stage"></div></div>
-
 <script>
-(function(){
-  function setLang(l){
-    document.querySelectorAll('[data-hi]').forEach(function(el){
-      var v=el.getAttribute(l==='hi'?'data-hi':'data-en');
-      if(v!=null) el.innerHTML=v;
-    });
-    document.getElementById('hi').setAttribute('aria-pressed', l==='hi');
-    document.getElementById('en').setAttribute('aria-pressed', l==='en');
-  }
-  document.getElementById('hi').onclick=function(){setLang('hi')};
-  document.getElementById('en').onclick=function(){setLang('en')};
+var outcome="elig", vl="ok", reasonPicked=false, timers=[];
+function clearTimers(){timers.forEach(clearTimeout);timers=[];}
+function progressHTML(active,done){
+  var labels=[["नया स्कैन","Scan new"],["लगाएं","Install"],["वेरिफाई","Verify"],["तैयार","Ready"]];
+  var t='<div class="prog"><div class="ptrack">';
+  for(var i=0;i<4;i++){var cls=i<done?"pnode done":(i===active?"pnode on":"pnode");t+='<div class="'+cls+'">'+(i<done?"✓":"")+'</div>';if(i<3)t+='<div class="pseg'+(i<done?" done":"")+'"></div>';}
+  t+='</div><div class="plabels">';for(var j=0;j<4;j++){t+='<span class="'+(j===active?"on":"")+'" data-hi="'+labels[j][0]+'" data-en="'+labels[j][1]+'">'+labels[j][0]+'</span>';}
+  t+='</div></div>';return t;
+}
+document.getElementById('prog-intro').innerHTML=progressHTML(0,0);
+document.getElementById('prog-scan').innerHTML=progressHTML(0,0);
+document.getElementById('prog-physical').innerHTML=progressHTML(1,1);
+document.getElementById('prog-verifying').innerHTML=progressHTML(2,2);
+document.getElementById('prog-swapok').innerHTML=progressHTML(3,4);
+// device list
+var devs=["1001","1002","1003","2045","3078"];
+document.getElementById('devlist').innerHTML=devs.map(function(id,i){return '<div class="dev'+(i===0?' sel':'')+'" onclick="pickDev(this)"><span class="cbx">'+(i===0?'✓':'')+'</span><div><b>NB-REP-'+id+'</b><small>Replacement #'+id+'</small></div></div>';}).join('');
 
-  var modal=document.getElementById('modal'), stage=document.getElementById('stage');
-  function close(){modal.classList.remove('on');stage.innerHTML='';}
-  document.querySelectorAll('.phone,.sheet').forEach(function(p){
-    p.addEventListener('click',function(){
-      stage.innerHTML=''; var c=p.cloneNode(true); stage.appendChild(c); modal.classList.add('on');
-    });
-  });
-  modal.addEventListener('click',function(e){if(e.target===modal||e.target.classList.contains('close'))close();});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
-})();
+var PAGES=[["ticket","टिकट+⋮"],["checking","जांच"],["success","जांच सफल"],["inelig","नहीं कर सकते"],["intro","इंट्रो"],["reason","कारण"],["scan","स्कैन"],["scansuccess","स्कैन सफल"],["picker","डिवाइस पिकर"],["physical","लगाएं"],["processing","प्रोसेसिंग"],["verifying","वेरिफाई"],["swapok","स्वैप सफल"],["notverified","वेरिफाई नहीं"],["failed","फेल"]];
+document.getElementById('chips').innerHTML=PAGES.map(function(p){return '<button class="chip" data-jump="'+p[0]+'" onclick="jump(\''+p[0]+'\')">'+p[1]+'</button>';}).join('');
+
+function setActiveChip(id){document.querySelectorAll('#chips .chip').forEach(function(c){c.classList.toggle('on',c.getAttribute('data-jump')===id);});}
+function go(id){clearTimers();closeAll();document.querySelectorAll('.pg').forEach(function(p){p.classList.toggle('active',p.getAttribute('data-pg')===id);});setActiveChip(id);}
+function jump(id){if(id==="reason"){go('intro');openSheet('reason');}else if(id==="picker"){go('scan');openSheet('picker');}else go(id);}
+function openMenu(){document.getElementById('menu').classList.add('on');document.getElementById('scrim').classList.add('on');}
+function openSheet(name){document.getElementById('sheet-'+name).classList.add('on');document.getElementById('scrim').classList.add('on');setActiveChip(name);}
+function closeAll(){document.getElementById('menu').classList.remove('on');document.querySelectorAll('.sheet').forEach(function(s){s.classList.remove('on');});document.getElementById('scrim').classList.remove('on');}
+function startJaanch(){go('checking');timers.push(setTimeout(function(){go(outcome==='elig'?'success':'inelig');},2400));}
+function pickReason(el){document.querySelectorAll('#sheet-reason .opt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');timers.push(setTimeout(function(){closeAll();go('scan');},420));}
+function pickDev(el){document.querySelectorAll('#sheet-picker .dev').forEach(function(d){d.classList.remove('sel');d.querySelector('.cbx').textContent='';});el.classList.add('sel');el.querySelector('.cbx').textContent='✓';}
+function startProcessing(){go('processing');timers.push(setTimeout(function(){startVerifying();},1600));}
+function startVerifying(){go('verifying');var t=134;var cd=document.getElementById('cd');var iv=setInterval(function(){t--;var m=Math.floor(t/60),s=t%60;cd.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;if(t<=128){clearInterval(iv);}},120);timers.push(setTimeout(function(){go(vl==='ok'?'swapok':(vl==='no'?'notverified':'failed'));},3200));}
+function setOutcome(v,el){outcome=v;el.parentNode.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');}
+function setVL(v,el){vl=v;el.parentNode.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');}
+function resetOutcomes(){/* keep selections */}
+// lang
+function setLang(l){document.querySelectorAll('[data-hi]').forEach(function(e){var v=e.getAttribute(l==='hi'?'data-hi':'data-en');if(v!=null)e.textContent=v;});document.getElementById('hi').setAttribute('aria-pressed',l==='hi');document.getElementById('en').setAttribute('aria-pressed',l==='en');}
+document.getElementById('hi').onclick=function(){setLang('hi');};
+document.getElementById('en').onclick=function(){setLang('en');};
+go('ticket');
 </script>
