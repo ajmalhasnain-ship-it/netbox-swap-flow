@@ -1,387 +1,373 @@
-<title>NetBox Swap — Interactive Prototype</title>
+<title>NetBox Swap — CSP App · Living Spec</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{
-  --brand:#D9008D; --brand-press:#A30070; --tint:#FFE5F6; --maroon:#4A1535;
-  --cream:#FBF1E1; --progbg:#F1E1D9; --menu:#EFE0DC;
-  --green:#12A150; --green-ic:#008043; --posbg:#E1FAED;
-  --red:#D92130; --warnbg:#FBEBB6; --warnic:#E8721C; --warnamber:#E2B203;
-  --ink:#231F20; --ink2:#6B675F; --ink3:#8C8578; --hair:#E7DBC4;
-  --page:#1b1016; --pane:#241820; --paneline:#3a2833; --ptext:#f3e8ee; --ptext2:#b49aa8; --accent:#FF3FAE;
+  --font-display:"Segoe UI Semibold","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-body:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  --font-mono:ui-monospace,"Cascadia Code","Consolas","SF Mono",monospace;
+  --font-deva:"Nirmala UI","Noto Sans Devanagari","Kohinoor Devanagari","Mangal",system-ui,sans-serif;
+  /* app tokens */
+  --brand:#D9008D;--brand-press:#A30070;--tint:#FFE5F6;--maroon:#4A1535;
+  --cream:#FBF1E1;--progbg:#F1E1D9;--menu:#EFE0DC;
+  --green:#12A150;--green-ic:#008043;--red:#D92130;--warnbg:#FBEBB6;--warnic:#E8721C;--warnamber:#E2B203;
+  --ink-app:#231F20;--ink2-app:#6B675F;--ink3:#8C8578;--hair:#E7DBC4;
+  /* doc tokens (light living-spec) */
+  --ground:#F7F4F9;--panel:#FFFFFF;--panel-2:#FBF9FC;--ink:#1A1220;--ink-2:#5C5570;--ink-3:#8B8398;
+  --line:#E6E1EC;--line-2:#EFEBF4;--accent:#C1007E;--accent-soft:#FCE4F3;--code-bg:#F4F1F8;
+  --state-positive:#008043;--state-negative:#D92130;--state-caution:#E65100;--state-info:#6D17CE;
+  --bg-positive:#E1FAED;--bg-negative:#FFE5E7;--bg-warning:#FFF2BF;
+  --r-lg:16px;--r-md:12px;--r-sm:8px;--shadow:0 1px 2px rgba(30,10,25,.05),0 14px 34px -18px rgba(30,10,25,.22);
 }
-@media (prefers-color-scheme:light){:root{--page:#efe7dc;--pane:#fbf6ee;--paneline:#e0d3bf;--ptext:#2b2019;--ptext2:#7a6c5c;--accent:#D9008D;}}
-:root[data-theme="light"]{--page:#efe7dc;--pane:#fbf6ee;--paneline:#e0d3bf;--ptext:#2b2019;--ptext2:#7a6c5c;--accent:#D9008D;}
-:root[data-theme="dark"]{--page:#1b1016;--pane:#241820;--paneline:#3a2833;--ptext:#f3e8ee;--ptext2:#b49aa8;--accent:#FF3FAE;}
+@media (prefers-color-scheme:dark){:root{--ground:#141019;--panel:#1d1725;--panel-2:#221b2b;--ink:#f2ecf7;--ink-2:#c3b7cf;--ink-3:#8f849c;--line:#33293f;--line-2:#2a2233;--accent:#FF57B0;--accent-soft:#3a1030;--code-bg:#211a2a;}}
+:root[data-theme="dark"]{--ground:#141019;--panel:#1d1725;--panel-2:#221b2b;--ink:#f2ecf7;--ink-2:#c3b7cf;--ink-3:#8f849c;--line:#33293f;--line-2:#2a2233;--accent:#FF57B0;--accent-soft:#3a1030;--code-bg:#211a2a;}
+:root[data-theme="light"]{--ground:#F7F4F9;--panel:#FFFFFF;--panel-2:#FBF9FC;--ink:#1A1220;--ink-2:#5C5570;--ink-3:#8B8398;--line:#E6E1EC;--line-2:#EFEBF4;--accent:#C1007E;--accent-soft:#FCE4F3;--code-bg:#F4F1F8;}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:radial-gradient(1000px 480px at 20% -10%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 60%),var(--page);color:var(--ptext);font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;min-height:100vh}
-.dv{font-family:"Nirmala UI","Noto Sans Devanagari","Kohinoor Devanagari","Mangal",system-ui,sans-serif}
-.wrap{max-width:1180px;margin:0 auto;padding:30px 22px 70px;display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap}
-.lead{flex:1;min-width:280px}
-.eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:800;margin:0 0 10px}
-h1{font-size:clamp(26px,3.4vw,40px);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em}
-.sub{margin:14px 0 22px;max-width:46ch;color:var(--ptext2);font-size:15px;line-height:1.55}
-.seg{display:inline-flex;background:var(--pane);border:1px solid var(--paneline);border-radius:999px;padding:3px;margin-bottom:20px}
-.seg button{border:0;background:transparent;color:var(--ptext2);font:inherit;font-weight:700;font-size:13px;padding:7px 15px;border-radius:999px;cursor:pointer}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--font-body);line-height:1.6;-webkit-font-smoothing:antialiased}
+.deva{font-family:var(--font-deva)}
+.mono{font-family:var(--font-mono);font-size:.86em;color:var(--accent)}
+.doc{max-width:1080px;margin:0 auto;padding:0 24px}
+section{padding:46px 0;border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.eyebrow{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 10px}
+.section-h{font-family:var(--font-display);font-size:clamp(24px,3.6vw,36px);font-weight:800;letter-spacing:-.02em;margin:0}
+.lede{max-width:70ch;color:var(--ink-2);font-size:16px;margin:14px 0 0}
+.block-h{font-size:18px;font-weight:750;letter-spacing:-.01em;margin:38px 0 6px}
+.p{color:var(--ink-2);font-size:15px;max-width:72ch}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 4px;font-size:15.5px;font-weight:750}
+.card p{margin:6px 0 0;font-size:13.5px;color:var(--ink-2)}
+.tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent);padding:3px 8px;border-radius:999px;font-weight:600;white-space:nowrap}
+.pill{display:inline-block;font-family:var(--font-mono);font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--bg-positive);color:var(--state-positive)}
+.pill.warn{background:var(--bg-warning);color:var(--state-caution)}
+.pill.crit{background:var(--bg-negative);color:var(--state-negative)}
+.pill.info{background:var(--accent-soft);color:var(--accent)}
+.pill.new{background:transparent;color:var(--accent);border:1px dashed color-mix(in srgb,var(--accent) 45%,transparent)}
+.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-md);margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:520px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+th{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);background:var(--panel-2)}
+tr:last-child td{border-bottom:0}
+td .mono{white-space:nowrap}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:9px 18px;margin:14px 0;font-size:14px}
+.kv dt{font-family:var(--font-mono);font-size:12.5px;color:var(--accent)}
+.kv dd{margin:0;color:var(--ink-2)}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px;overflow-x:auto;font-family:var(--font-mono);font-size:12.5px;color:var(--ink);line-height:1.65;margin:14px 0}
+pre .c{color:var(--ink-3)} pre .k{color:var(--accent);font-weight:600}
+.seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;color:var(--ink-2);font:inherit;font-weight:700;font-size:13px;padding:6px 14px;border-radius:999px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
-.nav h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ptext2);margin:22px 0 10px;font-weight:800}
-.chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{border:1px solid var(--paneline);background:var(--pane);color:var(--ptext);border-radius:9px;padding:7px 11px;font-size:12.5px;cursor:pointer;font-family:inherit;transition:.15s}
-.chip:hover{border-color:var(--accent)}
-.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-.hint{font-size:12.5px;color:var(--ptext2);margin-top:14px;line-height:1.5}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.hero-live{display:flex;gap:34px;align-items:flex-start;margin-top:26px;flex-wrap:wrap}
+.hero-live .copy{flex:1;min-width:260px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:9px;padding:7px 11px;font-size:12.5px;cursor:pointer;font-family:inherit}
+.chip:hover{border-color:var(--accent)} .chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.smh{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:18px 0 8px;font-weight:700}
+.foot{padding:40px 0;color:var(--ink-3);font-size:13px}
 
-/* ---------- device ---------- */
-.stage{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:14px}
-.device{width:352px;height:740px;background:#0f0b09;border-radius:44px;padding:11px;box-shadow:0 4px 8px rgba(40,20,10,.14),0 40px 70px -30px rgba(40,20,10,.5);position:sticky;top:24px}
-.screen{position:relative;width:100%;height:100%;background:var(--cream);border-radius:34px;overflow:hidden}
-.pg{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;transform:translateX(14px);pointer-events:none;transition:opacity .28s ease,transform .28s ease;overflow:hidden}
+/* ---------------- interactive phone (app-exact) ---------------- */
+.stage{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:12px}
+.device{width:330px;height:694px;background:#0f0b09;border-radius:42px;padding:10px;box-shadow:0 4px 8px rgba(40,20,10,.16),0 40px 70px -30px rgba(40,20,10,.5)}
+.pscreen{position:relative;width:100%;height:100%;background:var(--cream);border-radius:32px;overflow:hidden}
+.pg{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;transform:translateX(12px);pointer-events:none;transition:opacity .26s,transform .26s;overflow:hidden}
 .pg.active{opacity:1;transform:none;pointer-events:auto}
-.restart{font-size:12.5px;color:var(--ptext2);cursor:pointer;background:none;border:0;font-family:inherit}
-.restart:hover{color:var(--accent)}
-
-/* status bar */
-.sbar{height:30px;display:flex;align-items:center;justify-content:space-between;padding:9px 18px 0;font-size:12px;font-weight:600;flex:0 0 auto}
-.sbar .r{opacity:.72;font-size:10.5px;letter-spacing:.3px}
-.sbar.onmaroon{color:#fff}
-.sbar.onink{color:var(--ink)}
-/* app bars */
-.abar{display:flex;align-items:center;gap:12px;padding:10px 14px;flex:0 0 auto}
-.abar.maroon{background:var(--maroon);color:#fff}
-.abar.maroon .ttl{font-weight:800;font-size:15px}
-.abar .ico{font-size:20px;cursor:pointer}
-.abar .grow{flex:1}
-.abar.light{color:var(--ink)}
-.abar.light .x{font-size:21px;cursor:pointer}
-.abar.light .help{color:var(--brand);font-weight:700;font-size:14px;cursor:pointer}
-.body{flex:1;overflow-y:auto;overflow-x:hidden}
-.body.pad{padding:14px 16px}
-.center{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px;gap:15px}
-.center.up{justify-content:flex-start;padding-top:33%}
-.htitle{font-weight:800;font-size:19px;color:var(--ink);line-height:1.25}
-.hlg{font-weight:800;font-size:22px;color:var(--ink);line-height:1.22}
-.hsub{font-size:14px;color:var(--ink2);line-height:1.45}
-
-/* banner */
-.banner{display:flex;gap:12px;align-items:center;background:var(--warnbg);border-radius:13px;padding:14px}
-.banner .ci{width:40px;height:40px;border-radius:50%;background:var(--warnic);color:#fff;font-weight:900;font-size:20px;display:grid;place-items:center;flex:0 0 auto}
-.banner b{font-size:16px;color:var(--ink)} .banner p{margin:2px 0 0;font-size:13px;color:var(--ink2)}
-.sec{margin-top:16px}
-.sec .hd{display:flex;align-items:center;gap:8px}
-.sec .hd .ic{color:var(--ink2);font-size:16px}
-.sec .hd b{font-size:16px;color:var(--ink);font-weight:800;flex:1}
-.badge{background:var(--brand);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:10px;display:grid;place-items:center;padding:0 6px}
-.chev{color:var(--ink2);font-size:15px}
-.muted{font-size:13px;color:var(--ink2);margin-top:6px}
-.pass{font-size:13px;color:var(--green-ic);font-weight:700;margin-top:6px}
-.rowlink{display:flex;align-items:center;margin-top:10px}
-.rowlink span{flex:1;font-size:13px;color:var(--ink)}
-.pink{color:var(--brand);font-weight:700}
-.hr{height:1px;background:var(--hair);margin:16px 0}
-
-/* buttons */
-.ctabar{padding:12px 16px 18px;flex:0 0 auto}
-.btn{display:block;width:100%;text-align:center;border:0;border-radius:26px;padding:15px;font-weight:800;font-size:14.5px;font-family:inherit;cursor:pointer}
-.btn.fill{background:var(--brand);color:#fff}.btn.fill:active{background:var(--brand-press)}
-.btn.text{background:transparent;color:var(--brand)}
-.reminder{font-size:12px;color:var(--ink2);text-align:center;padding:0 20px 8px}
-
-/* progress */
-.prog{margin:8px 16px 0;background:var(--progbg);border-radius:18px;padding:16px 16px}
+.sbar{height:28px;display:flex;align-items:center;justify-content:space-between;padding:8px 16px 0;font-size:11px;font-weight:600;flex:0 0 auto}
+.sbar .r{opacity:.72;font-size:10px}
+.sbar.onmaroon{color:#fff}.sbar.onink{color:var(--ink-app)}
+.abar{display:flex;align-items:center;gap:11px;padding:9px 13px;flex:0 0 auto}
+.abar.maroon{background:var(--maroon);color:#fff}.abar.maroon .ttl{font-weight:800;font-size:14px}
+.abar .ico{font-size:19px;cursor:pointer}.abar .grow{flex:1}
+.abar.light{color:var(--ink-app)}.abar.light .x{font-size:20px;cursor:pointer}
+.abar.light .help{color:var(--brand);font-weight:700;font-size:13px;cursor:pointer}
+.pbody{flex:1;overflow-y:auto;overflow-x:hidden}.pbody.pad{padding:13px 15px}
+.pcenter{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 28px;gap:14px}
+.pcenter.up{justify-content:flex-start;padding-top:32%}
+.htitle{font-weight:800;font-size:18px;color:var(--ink-app);line-height:1.25}
+.hlg{font-weight:800;font-size:21px;color:var(--ink-app);line-height:1.22}
+.hsub{font-size:13.5px;color:var(--ink2-app);line-height:1.45}
+.pbanner{display:flex;gap:11px;align-items:center;background:var(--warnbg);border-radius:12px;padding:13px}
+.pbanner .ci{width:38px;height:38px;border-radius:50%;background:var(--warnic);color:#fff;font-weight:900;font-size:19px;display:grid;place-items:center;flex:0 0 auto}
+.pbanner b{font-size:15px;color:var(--ink-app)}.pbanner p{margin:2px 0 0;font-size:12.5px;color:var(--ink2-app)}
+.psec{margin-top:15px}.psec .hd{display:flex;align-items:center;gap:8px}.psec .hd .ic{color:var(--ink2-app);font-size:15px}
+.psec .hd b{font-size:15px;color:var(--ink-app);font-weight:800;flex:1}
+.pbadge{background:var(--brand);color:#fff;font-size:11px;font-weight:800;min-width:19px;height:19px;border-radius:10px;display:grid;place-items:center;padding:0 6px}
+.pchev{color:var(--ink2-app);font-size:14px}.pmuted{font-size:12.5px;color:var(--ink2-app);margin-top:6px}
+.ppass{font-size:12.5px;color:var(--green-ic);font-weight:700;margin-top:6px}
+.prowlink{display:flex;align-items:center;margin-top:9px}.prowlink span{flex:1;font-size:12.5px;color:var(--ink-app)}
+.ppink{color:var(--brand);font-weight:700}.phr{height:1px;background:var(--hair);margin:15px 0}
+.pctabar{padding:11px 15px 16px;flex:0 0 auto}
+.pbtn{display:block;width:100%;text-align:center;border:0;border-radius:25px;padding:14px;font-weight:800;font-size:14px;font-family:inherit;cursor:pointer}
+.pbtn.fill{background:var(--brand);color:#fff}.pbtn.fill:active{background:var(--brand-press)}
+.pbtn.text{background:transparent;color:var(--brand)}
+.preminder{font-size:11.5px;color:var(--ink2-app);text-align:center;padding:0 18px 6px}
+.prog{margin:7px 15px 0;background:var(--progbg);border-radius:16px;padding:14px}
 .ptrack{display:flex;align-items:center}
-.pnode{width:26px;height:26px;border-radius:50%;border:2px solid #CBB6C2;flex:0 0 auto;display:grid;place-items:center}
-.pnode.on{border-color:var(--brand);background:var(--brand)} .pnode.on::after{content:"";width:9px;height:9px;border-radius:50%;background:#fff}
-.pnode.done{border-color:var(--green);background:var(--green);color:#fff;font-size:13px;font-weight:900}
+.pnode{width:24px;height:24px;border-radius:50%;border:2px solid #CBB6C2;flex:0 0 auto;display:grid;place-items:center}
+.pnode.on{border-color:var(--brand);background:var(--brand)}.pnode.on::after{content:"";width:8px;height:8px;border-radius:50%;background:#fff}
+.pnode.done{border-color:var(--green);background:var(--green);color:#fff;font-size:12px;font-weight:900}
 .pseg{height:2px;background:#DDC8D5;flex:1}.pseg.done{background:var(--green)}
-.plabels{display:flex;margin-top:9px}.plabels span{flex:1;text-align:center;font-size:9.5px;color:var(--ink3);line-height:1.15;padding:0 2px}.plabels span.on{color:var(--ink);font-weight:700}
-
-/* icon glyphs */
-.halo{width:104px;height:104px;border-radius:50%;background:var(--tint);display:grid;place-items:center}
-.gcircle{width:62px;height:62px;border-radius:50%;border:3px solid;display:grid;place-items:center;font-size:34px;font-weight:800}
-.gcircle.g{border-color:var(--green-ic);color:var(--green-ic)}
-.gcircle.r{border-color:var(--red);color:var(--red)}
-.gcircle.a{border-color:var(--warnamber);color:var(--warnamber)}
-/* spinner (material indeterminate) */
-.spin{width:50px;height:50px;border-radius:50%;border:4px solid transparent;border-top-color:var(--brand);border-right-color:var(--brand);animation:sp .9s linear infinite}
+.plabels{display:flex;margin-top:8px}.plabels span{flex:1;text-align:center;font-size:9px;color:var(--ink3);line-height:1.15;padding:0 2px}.plabels span.on{color:var(--ink-app);font-weight:700}
+.halo{width:96px;height:96px;border-radius:50%;background:var(--tint);display:grid;place-items:center}
+.gcircle{width:58px;height:58px;border-radius:50%;border:3px solid;display:grid;place-items:center;font-size:31px;font-weight:800}
+.gcircle.g{border-color:var(--green-ic);color:var(--green-ic)}.gcircle.r{border-color:var(--red);color:var(--red)}.gcircle.a{border-color:var(--warnamber);color:var(--warnamber)}
+.spin{width:46px;height:46px;border-radius:50%;border:4px solid transparent;border-top-color:var(--brand);border-right-color:var(--brand);animation:sp .9s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.spin{animation:sp 2s linear infinite}}
-/* router */
-.router{position:relative;width:70px;height:56px}
-.router .rbody{position:absolute;left:9px;bottom:6px;width:52px;height:20px;background:var(--brand);border-radius:5px}
-.router .led{position:absolute;bottom:12px;width:4px;height:4px;border-radius:50%;background:var(--tint)}
-.router .ant{position:absolute;left:33px;bottom:24px;width:3px;height:14px;background:var(--brand);border-radius:2px}
-.router .wv{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);border:2.5px solid var(--brand);border-bottom-color:transparent;border-left-color:transparent;border-right-color:transparent;border-radius:50%}
-/* countdown */
-.ring{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--brand) 62%,#E7D6E0 0)}
-.ring .in{width:84px;height:84px;border-radius:50%;background:var(--cream);display:grid;place-items:center;font-weight:800;font-size:19px;color:var(--ink)}
-
-/* viewfinder */
-.vf{width:196px;height:196px;border-radius:20px;background:linear-gradient(135deg,#2b2b2b,#101010);position:relative;margin:6px auto 0}
-.vf i{position:absolute;width:32px;height:32px;border:3px solid var(--brand)}
-.vf .c1{top:12px;left:12px;border-right:0;border-bottom:0;border-radius:6px 0 0 0}
-.vf .c2{top:12px;right:12px;border-left:0;border-bottom:0;border-radius:0 6px 0 0}
-.vf .c3{bottom:12px;left:12px;border-right:0;border-top:0;border-radius:0 0 0 6px}
-.vf .c4{bottom:12px;right:12px;border-left:0;border-top:0;border-radius:0 0 6px 0}
-.vf .qr{position:absolute;inset:46px;border-radius:6px;background:repeating-conic-gradient(#e9e9e9 0 25%,#141414 0 50%) 0 0/26px 26px}
-
-/* sheets */
-.scrim{position:absolute;inset:0;background:rgba(20,10,15,.34);opacity:0;pointer-events:none;transition:.25s;z-index:8}
-.scrim.on{opacity:1;pointer-events:auto}
-.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--cream);border-radius:22px 22px 0 0;transform:translateY(102%);transition:transform .3s cubic-bezier(.2,.8,.2,1);z-index:9;max-height:88%;display:flex;flex-direction:column}
-.sheet.on{transform:none}
-.sheet .grab{width:44px;height:5px;background:#D9CCB6;border-radius:3px;margin:12px auto 4px;flex:0 0 auto}
-.sheet .sbody{padding:6px 18px 18px;overflow-y:auto}
-.sheet h4{margin:8px 0 4px;font-size:18px;font-weight:800;color:var(--ink)}
-.sheet p.ssub{margin:0 0 14px;font-size:13px;color:var(--ink2)}
-/* material menu */
-.menu{position:absolute;top:52px;right:10px;background:var(--menu);border-radius:12px;box-shadow:0 8px 26px rgba(0,0,0,.22);transform:scale(.9);transform-origin:top right;opacity:0;pointer-events:none;transition:.16s;z-index:9;min-width:210px;padding:6px 0}
-.menu.on{transform:none;opacity:1;pointer-events:auto}
-.menu .mi{padding:14px 18px;font-size:16px;color:var(--ink);cursor:pointer}
-.menu .mi:active{background:rgba(0,0,0,.05)}
-.menu .mdiv{height:1px;background:rgba(0,0,0,.08);margin:0 4px}
-/* material radio / checkbox / search / input */
-.opt{display:flex;align-items:center;gap:14px;border:1px solid var(--hair);border-radius:13px;padding:15px;margin-bottom:10px;cursor:pointer}
-.opt .radio{width:22px;height:22px;border:2px solid #9A927F;border-radius:50%;flex:0 0 auto;display:grid;place-items:center}
-.opt.sel{border-color:var(--brand)} .opt.sel .radio{border-color:var(--brand)} .opt.sel .radio::after{content:"";width:11px;height:11px;border-radius:50%;background:var(--brand)}
-.opt span{font-size:15px;color:var(--ink)}
-.search{display:flex;align-items:center;gap:10px;border:1.5px solid var(--hair);border-radius:14px;padding:13px 15px;margin-bottom:6px;color:var(--ink3);font-size:14px}
-.dev{display:flex;align-items:center;gap:15px;padding:13px 0;cursor:pointer;border-bottom:1px solid var(--hair)}
-.dev .cbx{width:22px;height:22px;border:2px solid #9A927F;border-radius:5px;flex:0 0 auto;display:grid;place-items:center}
-.dev.sel .cbx{background:var(--brand);border-color:var(--brand);color:#fff;font-size:13px;font-weight:900}
-.dev b{font-size:16px;color:var(--ink);font-weight:700;display:block}
-.dev small{font-size:12px;color:var(--ink2)}
-.inp{border:1.5px solid var(--hair);border-radius:13px;padding:16px;font-size:15px;color:var(--ink3);margin-bottom:14px}
-.steps{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-direction:column;gap:14px}
-.steps li{display:flex;gap:11px;align-items:flex-start;font-size:14px;color:var(--ink);line-height:1.4}
-.steps .n{width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:13px;display:grid;place-items:center;flex:0 0 auto}
+.router{position:relative;width:64px;height:52px}
+.router .rbody{position:absolute;left:8px;bottom:6px;width:48px;height:18px;background:var(--brand);border-radius:5px}
+.router .led{position:absolute;bottom:11px;width:4px;height:4px;border-radius:50%;background:var(--tint)}
+.router .ant{position:absolute;left:30px;bottom:22px;width:3px;height:13px;background:var(--brand);border-radius:2px}
+.router .wv{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);border:2.5px solid var(--brand);border-bottom-color:transparent;border-left-color:transparent;border-right-color:transparent;border-radius:50%}
+.ring{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--brand) 62%,#E7D6E0 0)}
+.ring .in{width:78px;height:78px;border-radius:50%;background:var(--cream);display:grid;place-items:center;font-weight:800;font-size:18px;color:var(--ink-app)}
+.vf{width:184px;height:184px;border-radius:18px;background:linear-gradient(135deg,#2b2b2b,#101010);position:relative;margin:4px auto 0}
+.vf i{position:absolute;width:30px;height:30px;border:3px solid var(--brand)}
+.vf .c1{top:11px;left:11px;border-right:0;border-bottom:0;border-radius:6px 0 0 0}.vf .c2{top:11px;right:11px;border-left:0;border-bottom:0;border-radius:0 6px 0 0}
+.vf .c3{bottom:11px;left:11px;border-right:0;border-top:0;border-radius:0 0 0 6px}.vf .c4{bottom:11px;right:11px;border-left:0;border-top:0;border-radius:0 0 6px 0}
+.vf .qr{position:absolute;inset:42px;border-radius:6px;background:repeating-conic-gradient(#e9e9e9 0 25%,#141414 0 50%) 0 0/24px 24px}
+.scrim{position:absolute;inset:0;background:rgba(20,10,15,.34);opacity:0;pointer-events:none;transition:.24s;z-index:8}.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--cream);border-radius:22px 22px 0 0;transform:translateY(102%);transition:transform .3s cubic-bezier(.2,.8,.2,1);z-index:9;max-height:86%;display:flex;flex-direction:column}.sheet.on{transform:none}
+.sheet .grab{width:42px;height:5px;background:#D9CCB6;border-radius:3px;margin:11px auto 4px;flex:0 0 auto}
+.sheet .sbody{padding:6px 17px 16px;overflow-y:auto}
+.sheet h4{margin:8px 0 4px;font-size:17px;font-weight:800;color:var(--ink-app)}.sheet p.ssub{margin:0 0 13px;font-size:12.5px;color:var(--ink2-app)}
+.menu{position:absolute;top:50px;right:9px;background:var(--menu);border-radius:12px;box-shadow:0 8px 26px rgba(0,0,0,.22);transform:scale(.9);transform-origin:top right;opacity:0;pointer-events:none;transition:.16s;z-index:9;min-width:200px;padding:6px 0}.menu.on{transform:none;opacity:1;pointer-events:auto}
+.menu .mi{padding:13px 17px;font-size:15px;color:var(--ink-app);cursor:pointer}.menu .mdiv{height:1px;background:rgba(0,0,0,.08);margin:0 4px}
+.opt{display:flex;align-items:center;gap:13px;border:1px solid var(--hair);border-radius:12px;padding:14px;margin-bottom:9px;cursor:pointer}
+.opt .radio{width:21px;height:21px;border:2px solid #9A927F;border-radius:50%;flex:0 0 auto;display:grid;place-items:center}
+.opt.sel{border-color:var(--brand)}.opt.sel .radio{border-color:var(--brand)}.opt.sel .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--brand)}
+.opt span{font-size:14px;color:var(--ink-app)}
+.psearch{display:flex;align-items:center;gap:9px;border:1.5px solid var(--hair);border-radius:13px;padding:12px 14px;margin-bottom:6px;color:var(--ink3);font-size:13px}
+.dev{display:flex;align-items:center;gap:14px;padding:12px 0;cursor:pointer;border-bottom:1px solid var(--hair)}
+.dev .cbx{width:21px;height:21px;border:2px solid #9A927F;border-radius:5px;flex:0 0 auto;display:grid;place-items:center}
+.dev.sel .cbx{background:var(--brand);border-color:var(--brand);color:#fff;font-size:12px;font-weight:900}
+.dev b{font-size:15px;color:var(--ink-app);font-weight:700;display:block}.dev small{font-size:11.5px;color:var(--ink2-app)}
+.inp{border:1.5px solid var(--hair);border-radius:12px;padding:15px;font-size:14px;color:var(--ink3);margin-bottom:13px}
+.steps{list-style:none;padding:0;margin:11px 0 0;display:flex;flex-direction:column;gap:13px}
+.steps li{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink-app);line-height:1.4}
+.steps .n{width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:12px;display:grid;place-items:center;flex:0 0 auto}
+.restart{font-size:12px;color:var(--ink-3);cursor:pointer;background:none;border:0;font-family:inherit}.restart:hover{color:var(--accent)}
 </style>
 
-<div class="wrap">
-  <div class="lead">
-    <p class="eyebrow">Wiom CSP · Interactive Prototype</p>
-    <h1 class="dv" data-hi="नेट बॉक्स बदलें" data-en="NetBox Swap">नेट बॉक्स बदलें</h1>
-    <p class="sub dv" data-hi="असली ऐप जैसा टैप-करने वाला प्रोटोटाइप। सर्विस टिकट के ⋮ → सहायता से शुरू करें और पूरा फ्लो चलाएं।" data-en="A tap-through replica of the live app. Start from the ticket's ⋮ → सहायता and walk the whole flow.">असली ऐप जैसा टैप-करने वाला प्रोटोटाइप। सर्विस टिकट के ⋮ → सहायता से शुरू करें और पूरा फ्लो चलाएं।</p>
-    <div class="seg" role="group" aria-label="Language"><button id="hi" aria-pressed="true">हिं</button><button id="en" aria-pressed="false">EN</button></div>
-    <div class="nav">
-      <h3 data-hi="स्क्रीन पर जाएं" data-en="Jump to screen">स्क्रीन पर जाएं</h3>
-      <div class="chips" id="chips"></div>
-      <h3 data-hi="जांच का नतीजा" data-en="जांच outcome">जांच का नतीजा</h3>
-      <div class="chips"><button class="chip on" data-oc="elig" onclick="setOutcome('elig',this)">सफल</button><button class="chip" data-oc="inelig" onclick="setOutcome('inelig',this)">नहीं कर सकते</button></div>
-      <h3 data-hi="वेरिफिकेशन का नतीजा" data-en="Verify outcome">वेरिफिकेशन का नतीजा</h3>
-      <div class="chips"><button class="chip on" data-vl="ok" onclick="setVL('ok',this)">वेरिफाई हुआ</button><button class="chip" data-vl="no" onclick="setVL('no',this)">नहीं हुआ</button><button class="chip" data-vl="fail" onclick="setVL('fail',this)">फेल</button></div>
-      <p class="hint dv" data-hi="फोन पर सीधे टैप करके भी चल सकते हैं — CTA, ⋮, सहायता सब काम करते हैं।" data-en="You can also tap directly on the phone — CTAs, ⋮ and सहायता all work.">फोन पर सीधे टैप करके भी चल सकते हैं — CTA, ⋮, सहायता सब काम करते हैं।</p>
+<div class="doc">
+  <!-- ===== HERO ===== -->
+  <section>
+    <div class="hero-top">
+      <div>
+        <p class="eyebrow">Living prototype · matches the shipped app</p>
+        <h1 class="section-h dv" data-hi="एक खराब नेट बॉक्स, एक भरोसेमंद स्वैप — लाइव।" data-en="One faulty NetBox, one trusted swap — live.">एक खराब नेट बॉक्स, एक भरोसेमंद स्वैप — लाइव।</h1>
+        <p class="lede dv" data-hi="नीचे का हर स्क्रीन ऐप के अपने टोकन और लेबल से बना है। सर्विस टिकट के ⋮ → सहायता से शुरू करें — Wiom पहले जांच करता है, फिर ज़रूरत होने पर ही स्वैप खुलता है।" data-en="Every screen is built from the app's own tokens and labels. Start from the ticket's ⋮ → सहायता — Wiom runs the जांच first, and the swap only opens when it's actually warranted.">नीचे का हर स्क्रीन ऐप के अपने टोकन और लेबल से बना है। सर्विस टिकट के ⋮ → सहायता से शुरू करें — Wiom पहले जांच करता है, फिर ज़रूरत होने पर ही स्वैप खुलता है।</p>
+      </div>
+      <div class="seg" role="group" aria-label="Language"><button id="hi" aria-pressed="true">हिं</button><button id="en" aria-pressed="false">EN</button></div>
     </div>
-  </div>
 
-  <div class="stage">
-    <div class="device"><div class="screen dv" id="screen">
-      <div class="scrim" id="scrim" onclick="closeAll()"></div>
+    <div class="hero-live">
+      <div class="stage">
+        <div class="device"><div class="pscreen dv" id="screen">
+          <div class="scrim" id="scrim" onclick="closeAll()"></div>
 
-      <!-- TICKET -->
-      <div class="pg" data-pg="ticket">
-        <div class="sbar onmaroon"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar maroon"><span class="ico">←</span><span class="ttl">सर्विस - WBOX-abc-001</span><span class="grow"></span><span class="ico" onclick="openMenu()">⋮</span></div>
-        <div class="body pad">
-          <div class="banner"><div class="ci">!</div><div><b data-hi="तुरंत ध्यान दें" data-en="Needs attention">तुरंत ध्यान दें</b><p data-hi="कनेक्शन में दिक्कत आ रही है" data-en="This connection has an issue">कनेक्शन में दिक्कत आ रही है</p></div></div>
-          <div class="sec"><div class="hd"><span class="ic">〜</span><b data-hi="अपडेट" data-en="Updates">अपडेट</b><span class="badge">1</span><span class="chev">⌄</span></div><div class="muted" data-hi="अभी कोई अपडेट नहीं" data-en="No updates yet">अभी कोई अपडेट नहीं</div></div>
-          <div class="hr"></div>
-          <div class="sec"><div class="hd"><span class="ic">ⓘ</span><b data-hi="ज़रूरी जानकारी" data-en="Key info">ज़रूरी जानकारी</b></div><div class="muted" data-hi="सेवा समस्या" data-en="Service issue">सेवा समस्या</div><div class="pass">✓ [proof.auto_ping]: <span data-hi="पास" data-en="pass">पास</span></div><div class="rowlink"><span data-hi="इस कनेक्शन की पिछली समस्याएं" data-en="Past issues on this connection">इस कनेक्शन की पिछली समस्याएं</span><span class="chev">⌄</span></div></div>
-          <div class="hr"></div>
-          <div class="sec"><div class="hd"><span class="ic">◎</span><b data-hi="कहाँ जाना है?" data-en="Where to go?">कहाँ जाना है?</b></div><div style="font-weight:700;color:var(--ink);font-size:14px;margin-top:6px">Sharma Dairy</div><div class="muted">H.No. 12, Vani Vihar · Sector 8, Gurugram, 122001</div><div class="pink" style="font-size:13px;margin-top:8px" data-hi="मैप पर लोकेशन देखें" data-en="View location on map">मैप पर लोकेशन देखें</div></div>
-          <div class="hr"></div>
-          <div class="sec"><div class="hd"><span class="ic">☏</span><b data-hi="संपर्क कैसे करें?" data-en="How to contact?">संपर्क कैसे करें?</b></div><div class="pink" style="font-size:13px;margin-top:6px" data-hi="आप कॉल कर सकते हैं" data-en="You can call">आप कॉल कर सकते हैं</div></div>
-        </div>
-        <div class="ctabar"><button class="btn fill" data-hi="टीम को भेजें" data-en="Send to team">टीम को भेजें</button></div>
-        <!-- material menu -->
-        <div class="menu" id="menu">
-          <div class="mi" onclick="closeAll();go('intro')" data-hi="नेट बॉक्स बदलना है" data-en="Swap NetBox">नेट बॉक्स बदलना है</div>
-          <div class="mdiv"></div>
-          <div class="mi" onclick="closeAll();startJaanch()" data-hi="सहायता" data-en="Help">सहायता</div>
-        </div>
+          <div class="pg" data-pg="ticket">
+            <div class="sbar onmaroon"><span>4:15</span><span class="r">LTE 100%</span></div>
+            <div class="abar maroon"><span class="ico">←</span><span class="ttl">सर्विस - WBOX-abc-001</span><span class="grow"></span><span class="ico" onclick="openMenu()">⋮</span></div>
+            <div class="pbody pad">
+              <div class="pbanner"><div class="ci">!</div><div><b data-hi="तुरंत ध्यान दें" data-en="Needs attention">तुरंत ध्यान दें</b><p data-hi="कनेक्शन में दिक्कत आ रही है" data-en="This connection has an issue">कनेक्शन में दिक्कत आ रही है</p></div></div>
+              <div class="psec"><div class="hd"><span class="ic">〜</span><b data-hi="अपडेट" data-en="Updates">अपडेट</b><span class="pbadge">1</span><span class="pchev">⌄</span></div><div class="pmuted" data-hi="अभी कोई अपडेट नहीं" data-en="No updates yet">अभी कोई अपडेट नहीं</div></div>
+              <div class="phr"></div>
+              <div class="psec"><div class="hd"><span class="ic">ⓘ</span><b data-hi="ज़रूरी जानकारी" data-en="Key info">ज़रूरी जानकारी</b></div><div class="pmuted" data-hi="सेवा समस्या" data-en="Service issue">सेवा समस्या</div><div class="ppass">✓ [proof.auto_ping]: <span data-hi="पास" data-en="pass">पास</span></div><div class="prowlink"><span data-hi="इस कनेक्शन की पिछली समस्याएं" data-en="Past issues on this connection">इस कनेक्शन की पिछली समस्याएं</span><span class="pchev">⌄</span></div></div>
+              <div class="phr"></div>
+              <div class="psec"><div class="hd"><span class="ic">◎</span><b data-hi="कहाँ जाना है?" data-en="Where to go?">कहाँ जाना है?</b></div><div style="font-weight:700;color:var(--ink-app);font-size:13.5px;margin-top:6px">Sharma Dairy</div><div class="pmuted">H.No. 12, Vani Vihar · Sector 8, Gurugram, 122001</div><div class="ppink" style="font-size:12.5px;margin-top:8px" data-hi="मैप पर लोकेशन देखें" data-en="View location on map">मैप पर लोकेशन देखें</div></div>
+              <div class="phr"></div>
+              <div class="psec"><div class="hd"><span class="ic">☏</span><b data-hi="संपर्क कैसे करें?" data-en="How to contact?">संपर्क कैसे करें?</b></div><div class="ppink" style="font-size:12.5px;margin-top:6px" data-hi="आप कॉल कर सकते हैं" data-en="You can call">आप कॉल कर सकते हैं</div></div>
+            </div>
+            <div class="pctabar"><button class="pbtn fill" data-hi="टीम को भेजें" data-en="Send to team">टीम को भेजें</button></div>
+            <div class="menu" id="menu"><div class="mi" onclick="closeAll();startJaanch()" data-hi="नेट बॉक्स बदलना है" data-en="Swap NetBox">नेट बॉक्स बदलना है</div><div class="mdiv"></div><div class="mi" onclick="closeAll();startJaanch()" data-hi="सहायता" data-en="Help">सहायता</div></div>
+          </div>
+
+          <div class="pg" data-pg="checking"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div><div class="pcenter"><div class="spin"></div><div class="htitle" data-hi="नेटबॉक्स की जांच चल रही है" data-en="Checking your NetBox">नेटबॉक्स की जांच चल रही है</div></div></div>
+
+          <div class="pg" data-pg="success"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div><div class="pcenter up"><div class="gcircle g">✓</div><div class="hlg" data-hi="जांच सफल रही" data-en="Check successful">जांच सफल रही</div><div class="hsub" data-hi="आप नेटबॉक्स स्वैप कर सकते हैं" data-en="You can swap the NetBox">आप नेटबॉक्स स्वैप कर सकते हैं</div></div><div class="pctabar"><button class="pbtn fill" onclick="go('intro')" data-hi="आगे बढ़ें" data-en="Continue">आगे बढ़ें</button></div></div>
+
+          <div class="pg" data-pg="inelig"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div><div class="pcenter up"><div class="gcircle r">!</div><div class="hlg" data-hi="आप नेटबॉक्स स्वैप नहीं कर सकते हैं" data-en="You cannot swap the NetBox">आप नेटबॉक्स स्वैप नहीं कर सकते हैं</div><div class="hsub" data-hi="आपका नेटबॉक्स अभी सही से काम कर रहा है" data-en="Your NetBox is currently working fine">आपका नेटबॉक्स अभी सही से काम कर रहा है</div></div><div class="pctabar"><button class="pbtn text" onclick="go('ticket')" data-hi="ठीक है" data-en="OK">ठीक है</button></div></div>
+
+          <div class="pg" data-pg="intro"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div><div id="prog-intro"></div><div class="pcenter"><div class="halo"><div class="router"><div class="wv" style="width:24px;height:24px;bottom:28px"></div><div class="wv" style="width:38px;height:38px;bottom:28px"></div><span class="ant"></span><div class="rbody"></div><span class="led" style="left:18px"></span><span class="led" style="left:28px"></span><span class="led" style="left:38px"></span></div></div><div class="htitle" data-hi="नेट बॉक्स बदलें" data-en="Swap NetBox">नेट बॉक्स बदलें</div><div class="hsub" data-hi="यह प्रक्रिया आपको स्टेप-बाय-स्टेप पूरी करनी है" data-en="Complete this process step by step">यह प्रक्रिया आपको स्टेप-बाय-स्टेप पूरी करनी है</div></div><div class="pctabar"><button class="pbtn fill" onclick="openSheet('reason')" data-hi="नेटबॉक्स बदलने की प्रक्रिया शुरू करें" data-en="Start NetBox swap">नेटबॉक्स बदलने की प्रक्रिया शुरू करें</button></div></div>
+
+          <div class="pg" data-pg="scan"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div><div id="prog-scan"></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 22px;gap:12px"><div class="vf"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><div class="qr"></div></div><div class="htitle" data-hi="नया नेट बॉक्स स्कैन करें" data-en="Scan new NetBox">नया नेट बॉक्स स्कैन करें</div><div class="hsub" data-hi="नेटबॉक्स ID को स्कैन के बीच रखें" data-en="Place the NetBox ID in the scan area">नेटबॉक्स ID को स्कैन के बीच रखें</div></div><div class="pctabar"><button class="pbtn fill" onclick="go('scansuccess')" data-hi="स्कैन हुआ (डेमो)" data-en="Scanned (demo)">स्कैन हुआ (डेमो)</button><button class="pbtn text" onclick="openSheet('picker')" data-hi="स्कैन नहीं हो रहा?" data-en="Not scanning?">स्कैन नहीं हो रहा?</button></div></div>
+
+          <div class="pg" data-pg="scansuccess"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div><div class="pcenter"><div class="gcircle g">✓</div><div class="htitle" data-hi="नया नेट बॉक्स बदलने के लिए रेडी है" data-en="New NetBox is ready for swap">नया नेट बॉक्स बदलने के लिए रेडी है</div></div><div class="pctabar"><button class="pbtn fill" onclick="go('physical')" data-hi="आगे बढ़ें" data-en="Continue">आगे बढ़ें</button></div></div>
+
+          <div class="pg" data-pg="physical"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div><div id="prog-physical"></div><div class="pbody pad"><div class="hlg" style="font-size:17px" data-hi="अब नया नेट बॉक्स लगाएं" data-en="Now install the new NetBox">अब नया नेट बॉक्स लगाएं</div><div class="hsub" style="margin-top:4px" data-hi="नीचे दिए गए स्टेप पूरे करें, फिर वापस आकर कन्फर्म करें" data-en="Complete the steps below, then come back and confirm">नीचे दिए गए स्टेप पूरे करें, फिर वापस आकर कन्फर्म करें</div><ul class="steps"><li><span class="n">1</span><span data-hi="नया नेट बॉक्स बिजली से कनेक्ट करें" data-en="Plug the new NetBox into power">नया नेट बॉक्स बिजली से कनेक्ट करें</span></li><li><span class="n">2</span><span data-hi="पुराने नेट बॉक्स से LAN केबल निकालकर नए नेट बॉक्स में लगाएं" data-en="Move the LAN cable from the old NetBox to the new one">पुराने नेट बॉक्स से LAN केबल निकालकर नए नेट बॉक्स में लगाएं</span></li><li><span class="n">3</span><span data-hi="वेब पोर्टल खोलकर दिया गया प्रोसेस पूरा करें" data-en="Open the web portal and complete the process there">वेब पोर्टल खोलकर दिया गया प्रोसेस पूरा करें</span></li><li><span class="n">4</span><span data-hi="सब हो जाने पर यहाँ वापस आकर नीचे कन्फर्म करें" data-en="Once done, come back here and confirm below">सब हो जाने पर यहाँ वापस आकर नीचे कन्फर्म करें</span></li></ul><div class="inp" style="margin-top:15px" data-hi="जांच में क्या मिला (वैकल्पिक)" data-en="Diagnosis notes (optional)">जांच में क्या मिला (वैकल्पिक)</div></div><div class="pctabar"><button class="pbtn fill" onclick="startProcessing()" data-hi="मैंने नेट बॉक्स बदल दिया है" data-en="I've swapped the NetBox">मैंने नेट बॉक्स बदल दिया है</button></div></div>
+
+          <div class="pg" data-pg="processing"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div><div class="pcenter"><div class="spin"></div><div class="htitle" data-hi="स्वैप शुरू हो रहा है" data-en="Initiating swap">स्वैप शुरू हो रहा है</div><div class="hsub" data-hi="गेट चेक और डिवाइस वैलिडेशन चल रहा है। ऐप बंद न करें।" data-en="Running gate checks and device validation. Don't close the app.">गेट चेक और डिवाइस वैलिडेशन चल रहा है। ऐप बंद न करें।</div></div></div>
+
+          <div class="pg" data-pg="verifying"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div><div id="prog-verifying"></div><div class="pcenter"><div class="ring"><div class="in" id="cd">02:14</div></div><div class="htitle" data-hi="नेट बॉक्स वेरिफाई हो रहा है…" data-en="Verifying swap…">नेट बॉक्स वेरिफाई हो रहा है…</div><div class="hsub" data-hi="सिस्टम जांच रहा है कि नया चालू है और पुराना बंद। ऐप बंद न करें।" data-en="Checking the new device is live and the old one is off.">सिस्टम जांच रहा है कि नया चालू है और पुराना बंद। ऐप बंद न करें।</div></div></div>
+
+          <div class="pg" data-pg="swapok"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div><div id="prog-swapok"></div><div class="pcenter"><div class="gcircle g">✓</div><div class="hlg" data-hi="नेट बॉक्स बदल गया!" data-en="NetBox swapped!">नेट बॉक्स बदल गया!</div><div class="hsub" data-hi="नया नेट बॉक्स चालू है। अब सर्विस टिकट रिज़ॉल्व करें।" data-en="The new NetBox is live. Now resolve the ticket.">नया नेट बॉक्स चालू है। अब सर्विस टिकट रिज़ॉल्व करें।</div></div><div class="preminder" data-hi="पुराना नेट बॉक्स ऑफिस में जमा करना न भूलें" data-en="Don't forget to return the old NetBox">पुराना नेट बॉक्स ऑफिस में जमा करना न भूलें</div><div class="pctabar"><button class="pbtn fill" onclick="go('ticket')" data-hi="सर्विस टिकट खोलें" data-en="Open service ticket">सर्विस टिकट खोलें</button></div></div>
+
+          <div class="pg" data-pg="notverified"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div><div class="pcenter up"><div class="gcircle a">!</div><div class="hlg" data-hi="स्वैप वेरिफाई नहीं हुआ" data-en="Swap not verified">स्वैप वेरिफाई नहीं हुआ</div><div class="hsub" data-hi="नया नेट बॉक्स अभी चालू नहीं हुआ या पुराना अभी भी ऑन है।" data-en="The new NetBox isn't online yet, or the old one is still on.">नया नेट बॉक्स अभी चालू नहीं हुआ या पुराना अभी भी ऑन है।</div></div><div class="pctabar"><button class="pbtn fill" onclick="startVerifying()" data-hi="दोबारा कोशिश करें" data-en="Try again">दोबारा कोशिश करें</button><button class="pbtn text" onclick="go('swapok')" data-hi="मेरी तरफ से हो गया" data-en="Done from my side">मेरी तरफ से हो गया</button></div></div>
+
+          <div class="pg" data-pg="failed"><div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div><div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div><div class="pcenter up"><div class="gcircle r">✕</div><div class="hlg" data-hi="कुछ गड़बड़ हो गई" data-en="Something went wrong">कुछ गड़बड़ हो गई</div><div class="hsub" data-hi="स्वैप पूरा नहीं हो पाया। Wiom ops टीम को भेज दिया गया है।" data-en="The swap could not be completed. Escalated to the Wiom ops team.">स्वैप पूरा नहीं हो पाया। Wiom ops टीम को भेज दिया गया है।</div></div><div class="pctabar"><button class="pbtn text" onclick="go('ticket')" data-hi="बंद करें" data-en="Close">बंद करें</button></div></div>
+
+          <div class="sheet" id="sheet-reason"><div class="grab"></div><div class="sbody"><h4 data-hi="नेट बॉक्स बदलने का कारण चुनें" data-en="Choose a reason for the swap">नेट बॉक्स बदलने का कारण चुनें</h4><p class="ssub" data-hi="एक कारण चुनें ताकि हम आगे की प्रक्रिया शुरू कर सकें" data-en="Pick one so we can start the process">एक कारण चुनें ताकि हम आगे की प्रक्रिया शुरू कर सकें</p><div class="opt" onclick="pickReason(this)"><span class="radio"></span><span data-hi="नेट बॉक्स खराब या टूटा हुआ" data-en="Device hardware fault">नेट बॉक्स खराब या टूटा हुआ</span></div><div class="opt" onclick="pickReason(this)"><span class="radio"></span><span data-hi="नेट बॉक्स में सॉफ्टवेयर की दिक्कत" data-en="Device software issue">नेट बॉक्स में सॉफ्टवेयर की दिक्कत</span></div><div class="opt" onclick="pickReason(this)"><span class="radio"></span><span data-hi="नेट बॉक्स कनेक्ट नहीं हो रहा" data-en="Device connectivity issue">नेट बॉक्स कनेक्ट नहीं हो रहा</span></div></div></div>
+
+          <div class="sheet" id="sheet-picker"><div class="grab"></div><div class="sbody"><h4 data-hi="नया नेट बॉक्स चुनें" data-en="Select a replacement NetBox">नया नेट बॉक्स चुनें</h4><p class="ssub" data-hi="स्कैन नहीं हो पाया — नीचे दी गई लिस्ट से नया नेट बॉक्स चुनें" data-en="Scan failed — pick a replacement from the list below">स्कैन नहीं हो पाया — नीचे दी गई लिस्ट से नया नेट बॉक्स चुनें</p><div class="psearch">⌕ <span data-hi="नेट बॉक्स ID से खोजें" data-en="Search by NetBox ID">नेट बॉक्स ID से खोजें</span></div><div id="devlist"></div><button class="pbtn fill" style="margin-top:12px" onclick="closeAll();go('physical')" data-hi="यह नेट बॉक्स चुनें" data-en="Select this NetBox">यह नेट बॉक्स चुनें</button></div></div>
+        </div></div>
+        <button class="restart dv" onclick="go('ticket')" data-hi="↻ शुरू से" data-en="↻ Restart">↻ शुरू से</button>
       </div>
 
-      <!-- CHECKING -->
-      <div class="pg" data-pg="checking">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
-        <div class="center"><div class="spin"></div><div class="htitle" data-hi="नेटबॉक्स की जांच चल रही है" data-en="Checking your NetBox">नेटबॉक्स की जांच चल रही है</div></div>
+      <div class="copy">
+        <div class="smh">Jump to screen</div>
+        <div class="chips" id="chips"></div>
+        <div class="smh" data-hi="जांच का नतीजा" data-en="जांच outcome">जांच outcome</div>
+        <div class="chips"><button class="chip on" onclick="setOutcome('elig',this)">सफल</button><button class="chip" onclick="setOutcome('inelig',this)">नहीं कर सकते</button></div>
+        <div class="smh" data-hi="वेरिफिकेशन का नतीजा" data-en="Verify outcome">Verify outcome</div>
+        <div class="chips"><button class="chip on" onclick="setVL('ok',this)">वेरिफाई हुआ</button><button class="chip" onclick="setVL('no',this)">नहीं हुआ</button><button class="chip" onclick="setVL('fail',this)">फेल</button></div>
+        <p class="p dv" style="margin-top:16px" data-hi="फोन पर सीधे टैप करें — CTA, ⋮ और सहायता सब काम करते हैं। जांच और वेरिफिकेशन के नतीजे ऊपर से बदलें।" data-en="Tap the phone directly — CTAs, ⋮ and सहायता all work. Flip the जांच and verification outcomes above.">फोन पर सीधे टैप करें — CTA, ⋮ और सहायता सब काम करते हैं। जांच और वेरिफिकेशन के नतीजे ऊपर से बदलें।</p>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><span class="pill new">nayā · eligibility gate</span><span class="pill info">Wiom-verified</span><span class="pill ok">no auto-advance</span></div>
       </div>
+    </div>
+  </section>
 
-      <!-- SUCCESS (jaanch) -->
-      <div class="pg" data-pg="success">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
-        <div class="center up"><div class="gcircle g">✓</div><div class="hlg" data-hi="जांच सफल रही" data-en="Check successful">जांच सफल रही</div><div class="hsub" data-hi="आप नेटबॉक्स स्वैप कर सकते हैं" data-en="You can swap the NetBox">आप नेटबॉक्स स्वैप कर सकते हैं</div></div>
-        <div class="ctabar"><button class="btn fill" onclick="go('intro')" data-hi="आगे बढ़ें" data-en="Continue">आगे बढ़ें</button></div>
-      </div>
+  <!-- ===== DESIGN RATIONALE ===== -->
+  <section>
+    <p class="eyebrow">Design rationale</p>
+    <h2 class="section-h dv" data-hi="ज़रूरत हो तभी स्वैप।" data-en="Swap only when it's warranted.">ज़रूरत हो तभी स्वैप।</h2>
+    <p class="lede dv" data-hi="ऐप खुद तय नहीं करता कि स्वैप हो या नहीं — वह Wiom की जांच का नतीजा दिखाता है। सहायता ही वह दरवाज़ा है जहाँ से भरोसेमंद स्वैप शुरू होता है।" data-en="The app never decides the swap — it renders Wiom's जांच verdict. Help is the door through which a trusted swap begins.">ऐप खुद तय नहीं करता कि स्वैप हो या नहीं — वह Wiom की जांच का नतीजा दिखाता है। सहायता ही वह दरवाज़ा है जहाँ से भरोसेमंद स्वैप शुरू होता है।</p>
+    <div class="grid2" style="margin-top:22px">
+      <div class="card"><span class="tag">Triage, not a shortcut</span><h4 class="dv">सहायता = जांच</h4><p class="dv" data-hi="डिवाइस-फॉल्ट टिकट पर CSP “सहायता” दबाता है। Wiom रिमोट जांच करता है और तभी स्वैप खोलता है जब वाकई ज़रूरत हो — बेवजह के स्वैप और डिवाइस चर्न रुकते हैं।" data-en="On a device-fault ticket the CSP taps “सहायता”. Wiom checks remotely and only opens the swap when it's truly needed — cutting needless swaps and device churn.">डिवाइस-फॉल्ट टिकट पर CSP “सहायता” दबाता है। Wiom रिमोट जांच करता है और तभी स्वैप खोलता है जब वाकई ज़रूरत हो — बेवजह के स्वैप और डिवाइस चर्न रुकते हैं।</p></div>
+      <div class="card"><span class="tag">No teleporting</span><h4 class="dv">कोई साइलेंट जंप नहीं</h4><p class="dv" data-hi="जांच सफल होने पर स्क्रीन अपने-आप स्वैप में नहीं कूदती — एक साफ़ “आगे बढ़ें” CTA दिखता है, ताकि CSP को हमेशा पता रहे कि आगे क्या होगा।" data-en="On success the screen never auto-jumps into the swap — an explicit “आगे बढ़ें” CTA appears, so the CSP always controls the next step.">जांच सफल होने पर स्क्रीन अपने-आप स्वैप में नहीं कूदती — एक साफ़ “आगे बढ़ें” CTA दिखता है, ताकि CSP को हमेशा पता रहे कि आगे क्या होगा।</p></div>
+      <div class="card"><span class="tag">Verified, not assumed</span><h4 class="dv">पिंग से भरोसा</h4><p class="dv" data-hi="स्वैप के बाद VL (Validation Layer) जांचता है कि नया डिवाइस पिंग कर रहा है और पुराना बंद है। ऐप खुद “हो गया” नहीं मानता।" data-en="After the swap, the VL (Validation Layer) confirms the new device is pinging and the old is off. The app never self-declares success.">स्वैप के बाद VL (Validation Layer) जांचता है कि नया डिवाइस पिंग कर रहा है और पुराना बंद है। ऐप खुद “हो गया” नहीं मानता।</p></div>
+      <div class="card"><span class="tag">Reversible</span><h4 class="dv">फेल होने पर रास्ता</h4><p class="dv" data-hi="वेरिफिकेशन फेल हो तो “दोबारा कोशिश करें” या रिट्राई खत्म होने पर “मेरी तरफ से हो गया”। नॉन-रिकवरेबल फेल Wiom ops को जाता है; टिकट खुला रहता है।" data-en="If verification fails: “Try again”, or “Done from my side” once retries are exhausted. Non-recoverable failures escalate to Wiom ops; the ticket stays open.">वेरिफिकेशन फेल हो तो “दोबारा कोशिश करें” या रिट्राई खत्म होने पर “मेरी तरफ से हो गया”। नॉन-रिकवरेबल फेल Wiom ops को जाता है; टिकट खुला रहता है।</p></div>
+    </div>
 
-      <!-- NOT ELIGIBLE -->
-      <div class="pg" data-pg="inelig">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-        <div class="center up"><div class="gcircle r">!</div><div class="hlg" data-hi="आप नेटबॉक्स स्वैप नहीं कर सकते हैं" data-en="You cannot swap the NetBox">आप नेटबॉक्स स्वैप नहीं कर सकते हैं</div><div class="hsub" data-hi="आपका नेटबॉक्स अभी सही से काम कर रहा है" data-en="Your NetBox is currently working fine">आपका नेटबॉक्स अभी सही से काम कर रहा है</div></div>
-        <div class="ctabar"><button class="btn text" onclick="go('ticket')" data-hi="ठीक है" data-en="OK">ठीक है</button></div>
-      </div>
+    <div class="block-h">Copy deck — every user-facing string</div>
+    <p class="p dv" data-hi="ये सभी लेबल ऐप के netbox_swap_labels में हैं (हिं-first, दोनों भाषाएँ)।" data-en="All labels live in the app's netbox_swap_labels (Hindi-first, both locales).">ये सभी लेबल ऐप के netbox_swap_labels में हैं (हिं-first, दोनों भाषाएँ)।</p>
+    <div class="table-scroll"><table>
+      <tr><th>Screen</th><th>हिन्दी</th><th>English</th></tr>
+      <tr><td><span class="mono">menu</span></td><td class="deva">नेट बॉक्स बदलना है · सहायता</td><td>Swap NetBox · Help</td></tr>
+      <tr><td><span class="mono">eligibility.checking</span> <span class="pill new">new</span></td><td class="deva">नेटबॉक्स की जांच चल रही है</td><td>Checking your NetBox</td></tr>
+      <tr><td><span class="mono">eligibility.success</span> <span class="pill new">new</span></td><td class="deva">जांच सफल रही · आप नेटबॉक्स स्वैप कर सकते हैं · <b>आगे बढ़ें</b></td><td>Check successful · You can swap the NetBox · <b>Continue</b></td></tr>
+      <tr><td><span class="mono">eligibility.notEligible</span> <span class="pill new">new</span></td><td class="deva">आप नेटबॉक्स स्वैप नहीं कर सकते हैं · आपका नेटबॉक्स अभी सही से काम कर रहा है · मदद · <b>ठीक है</b></td><td>You cannot swap the NetBox · Your NetBox is currently working fine · Help · <b>OK</b></td></tr>
+      <tr><td><span class="mono">intro</span></td><td class="deva">नेट बॉक्स बदलें · यह प्रक्रिया आपको स्टेप-बाय-स्टेप पूरी करनी है · <b>नेटबॉक्स बदलने की प्रक्रिया शुरू करें</b></td><td>Swap NetBox · Complete this step by step · <b>Start NetBox swap</b></td></tr>
+      <tr><td><span class="mono">reason</span></td><td class="deva">नेट बॉक्स बदलने का कारण चुनें · खराब/टूटा · सॉफ्टवेयर · कनेक्ट नहीं</td><td>Choose a reason · Hardware · Software · Connectivity</td></tr>
+      <tr><td><span class="mono">scan</span></td><td class="deva">नया नेट बॉक्स स्कैन करें · नेटबॉक्स ID को स्कैन के बीच रखें</td><td>Scan new NetBox · Place the NetBox ID in the scan area</td></tr>
+      <tr><td><span class="mono">devicePicker</span></td><td class="deva">नया नेट बॉक्स चुनें · स्कैन नहीं हो पाया — लिस्ट से चुनें · <b>यह नेट बॉक्स चुनें</b></td><td>Select a replacement · Scan failed — pick from the list · <b>Select this NetBox</b></td></tr>
+      <tr><td><span class="mono">physicalSetup</span></td><td class="deva">अब नया नेट बॉक्स लगाएं · बिजली · LAN · वेब पोर्टल · <b>मैंने नेट बॉक्स बदल दिया है</b></td><td>Now install the new NetBox · Power · LAN · Web portal · <b>I've swapped the NetBox</b></td></tr>
+      <tr><td><span class="mono">verifying</span></td><td class="deva">नेट बॉक्स वेरिफाई हो रहा है… · ऐप बंद न करें</td><td>Verifying swap… · Don't close the app</td></tr>
+      <tr><td><span class="mono">success</span></td><td class="deva">नेट बॉक्स बदल गया! · पुराना नेट बॉक्स ऑफिस में जमा करना न भूलें · <b>सर्विस टिकट खोलें</b></td><td>NetBox swapped! · Return the old NetBox to the office · <b>Open service ticket</b></td></tr>
+      <tr><td><span class="mono">notVerified</span></td><td class="deva">स्वैप वेरिफाई नहीं हुआ · <b>दोबारा कोशिश करें</b> · मेरी तरफ से हो गया</td><td>Swap not verified · <b>Try again</b> · Done from my side</td></tr>
+      <tr><td><span class="mono">failed</span></td><td class="deva">कुछ गड़बड़ हो गई · Wiom ops टीम को भेज दिया गया है · <b>बंद करें</b></td><td>Something went wrong · Escalated to Wiom ops · <b>Close</b></td></tr>
+    </table></div>
+  </section>
 
-      <!-- INTRO -->
-      <div class="pg" data-pg="intro">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-        <div id="prog-intro"></div>
-        <div class="center">
-          <div class="halo"><div class="router"><div class="wv" style="width:26px;height:26px;bottom:32px"></div><div class="wv" style="width:42px;height:42px;bottom:32px"></div><span class="ant"></span><div class="rbody"></div><span class="led" style="left:20px"></span><span class="led" style="left:31px"></span><span class="led" style="left:42px"></span></div></div>
-          <div class="htitle" data-hi="नेट बॉक्स बदलें" data-en="Swap NetBox">नेट बॉक्स बदलें</div>
-          <div class="hsub" data-hi="यह प्रक्रिया आपको स्टेप-बाय-स्टेप पूरी करनी है" data-en="Complete this process step by step">यह प्रक्रिया आपको स्टेप-बाय-स्टेप पूरी करनी है</div>
-        </div>
-        <div class="ctabar"><button class="btn fill" onclick="openSheet('reason')" data-hi="नेटबॉक्स बदलने की प्रक्रिया शुरू करें" data-en="Start NetBox swap">नेटबॉक्स बदलने की प्रक्रिया शुरू करें</button></div>
-      </div>
+  <!-- ===== IMPLEMENTATION ===== -->
+  <section>
+    <p class="eyebrow">Implementation</p>
+    <h2 class="section-h">One flow, one repository, seven backend steps.</h2>
+    <p class="lede">The eligibility <span class="mono">जांच</span> gate is a pre-flight check in front of the existing swap flow. The app renders the verdict; the backend (guards G1–G11 + the VL ping) decides.</p>
 
-      <!-- SCAN -->
-      <div class="pg" data-pg="scan">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-        <div id="prog-scan"></div>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 24px;gap:14px">
-          <div class="vf"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><div class="qr"></div></div>
-          <div class="htitle" data-hi="नया नेट बॉक्स स्कैन करें" data-en="Scan new NetBox">नया नेट बॉक्स स्कैन करें</div>
-          <div class="hsub" data-hi="नेटबॉक्स ID को स्कैन के बीच रखें" data-en="Place the NetBox ID in the scan area">नेटबॉक्स ID को स्कैन के बीच रखें</div>
-        </div>
-        <div class="ctabar"><button class="btn fill" onclick="go('scansuccess')" data-hi="स्कैन हुआ (डेमो)" data-en="Scanned (demo)">स्कैन हुआ (डेमो)</button><button class="btn text" onclick="openSheet('picker')" data-hi="स्कैन नहीं हो रहा?" data-en="Not scanning?">स्कैन नहीं हो रहा?</button></div>
-      </div>
+    <div class="block-h">Entry &amp; navigation</div>
+    <dl class="kv">
+      <dt>trigger</dt><dd>Ticket ⋮ → <b class="deva">सहायता</b>, shown only when <span class="mono">swapEnabled = isSwapEnabled (RC) &amp;&amp; taskFamily == "RESTORE"</span></dd>
+      <dt>route · gate</dt><dd><span class="mono">netbox_swap_eligibility/{taskId}?oldDeviceId=</span></dd>
+      <dt>route · flow</dt><dd><span class="mono">netbox_swap_flow/{taskId}?oldDeviceId=</span></dd>
+      <dt>on eligible</dt><dd><b class="deva">आगे बढ़ें</b> → navigate to swap flow, <span class="mono">popUpTo(eligibility){inclusive}</span> so Back returns to the ticket</dd>
+      <dt>on not-eligible</dt><dd><b class="deva">ठीक है</b> → pop back to ticket · <b class="deva">मदद</b> → support graph</dd>
+    </dl>
 
-      <!-- SCAN SUCCESS -->
-      <div class="pg" data-pg="scansuccess">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-        <div class="center"><div class="gcircle g">✓</div><div class="htitle" data-hi="नया नेट बॉक्स बदलने के लिए रेडी है" data-en="New NetBox is ready for swap">नया नेट बॉक्स बदलने के लिए रेडी है</div></div>
-        <div class="ctabar"><button class="btn fill" onclick="go('physical')" data-hi="आगे बढ़ें" data-en="Continue">आगे बढ़ें</button></div>
-      </div>
+    <div class="block-h">Data model — presentation</div>
+    <pre><span class="c">// pre-flight gate (new)</span>
+suspend fun <span class="k">checkSwapEligibility</span>(taskId: String): Result&lt;Boolean&gt;
 
-      <!-- PHYSICAL -->
-      <div class="pg" data-pg="physical">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-        <div id="prog-physical"></div>
-        <div class="body pad">
-          <div class="hlg" style="font-size:18px" data-hi="अब नया नेट बॉक्स लगाएं" data-en="Now install the new NetBox">अब नया नेट बॉक्स लगाएं</div>
-          <div class="hsub" style="margin-top:4px" data-hi="नीचे दिए गए स्टेप पूरे करें, फिर वापस आकर कन्फर्म करें" data-en="Complete the steps below, then come back and confirm">नीचे दिए गए स्टेप पूरे करें, फिर वापस आकर कन्फर्म करें</div>
-          <ul class="steps">
-            <li><span class="n">1</span><span data-hi="नया नेट बॉक्स बिजली से कनेक्ट करें" data-en="Plug the new NetBox into power">नया नेट बॉक्स बिजली से कनेक्ट करें</span></li>
-            <li><span class="n">2</span><span data-hi="पुराने नेट बॉक्स से LAN केबल निकालकर नए नेट बॉक्स में लगाएं" data-en="Move the LAN cable from the old NetBox to the new one">पुराने नेट बॉक्स से LAN केबल निकालकर नए नेट बॉक्स में लगाएं</span></li>
-            <li><span class="n">3</span><span data-hi="वेब पोर्टल खोलकर दिया गया प्रोसेस पूरा करें" data-en="Open the web portal and complete the process there">वेब पोर्टल खोलकर दिया गया प्रोसेस पूरा करें</span></li>
-            <li><span class="n">4</span><span data-hi="सब हो जाने पर यहाँ वापस आकर नीचे कन्फर्म करें" data-en="Once done, come back here and confirm below">सब हो जाने पर यहाँ वापस आकर नीचे कन्फर्म करें</span></li>
-          </ul>
-          <div class="inp" style="margin-top:16px" data-hi="जांच में क्या मिला (वैकल्पिक)" data-en="Diagnosis notes (optional)">जांच में क्या मिला (वैकल्पिक)</div>
-        </div>
-        <div class="ctabar"><button class="btn fill" onclick="startProcessing()" data-hi="मैंने नेट बॉक्स बदल दिया है" data-en="I've swapped the NetBox">मैंने नेट बॉक्स बदल दिया है</button></div>
-      </div>
+<span class="c">// eligibility UI state</span>
+sealed interface <span class="k">EligibilityUi</span> { Checking · Eligible · NotEligible }
 
-      <!-- PROCESSING -->
-      <div class="pg" data-pg="processing">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
-        <div class="center"><div class="spin"></div><div class="htitle" data-hi="स्वैप शुरू हो रहा है" data-en="Initiating swap">स्वैप शुरू हो रहा है</div><div class="hsub" data-hi="गेट चेक और डिवाइस वैलिडेशन चल रहा है। ऐप बंद न करें।" data-en="Running gate checks and device validation. Don't close the app.">गेट चेक और डिवाइस वैलिडेशन चल रहा है। ऐप बंद न करें।</div></div>
-      </div>
+<span class="c">// existing swap flow</span>
+enum class <span class="k">SwapStep</span> { INTRO · SCAN_NEW · SCAN_NEW_SUCCESS · PHYSICAL_SETUP ·
+                     PROCESSING · VERIFYING · SUCCESS · NOT_VERIFIED · FAILED · ERROR }
+enum class <span class="k">SwapValidationOutcome</span> { CONFIRMED · NOT_CONFIRMED · NO_DATA }
+data class <span class="k">SwapConfig</span>(maxRetries, firstCheckDelaySeconds, pingLookbackSeconds, exhaustCapSeconds)</pre>
 
-      <!-- VERIFYING -->
-      <div class="pg" data-pg="verifying">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span><span class="grow"></span><span class="help" data-hi="मदद" data-en="Help">मदद</span></div>
-        <div id="prog-verifying"></div>
-        <div class="center"><div class="ring"><div class="in" id="cd">02:14</div></div><div class="htitle" data-hi="नेट बॉक्स वेरिफाई हो रहा है…" data-en="Verifying swap…">नेट बॉक्स वेरिफाई हो रहा है…</div><div class="hsub" data-hi="सिस्टम जांच रहा है कि नया चालू है और पुराना बंद। ऐप बंद न करें।" data-en="Checking the new device is live and the old one is off. Don't close the app.">सिस्टम जांच रहा है कि नया चालू है और पुराना बंद। ऐप बंद न करें।</div></div>
-      </div>
+    <div class="block-h">Endpoints — SwapRepository</div>
+    <div class="table-scroll"><table>
+      <tr><th>Step</th><th>Method</th><th>Endpoint</th><th>Purpose</th></tr>
+      <tr><td><span class="pill new">pre</span></td><td><span class="mono">—</span></td><td><span class="mono">checkSwapEligibility</span></td><td>जांच gate. Mock-driven; authoritative gating still happens at S1.</td></tr>
+      <tr><td>S1</td><td><span class="mono">POST</span></td><td><span class="mono">/tasks/{taskId}/netbox-swap</span></td><td>Gate check (G1–G11); persists diagnosis.</td></tr>
+      <tr><td>S2</td><td><span class="mono">POST</span></td><td><span class="mono">/netbox/swap/{taskId}/confirm-physical</span></td><td>Reserve devices, start timer, trigger remote swap.</td></tr>
+      <tr><td>S3</td><td><span class="mono">GET</span></td><td><span class="mono">/netbox/swap?status=in_progress</span></td><td>Hydrate an in-progress swap on launch/resume.</td></tr>
+      <tr><td>S4</td><td><span class="mono">GET</span></td><td><span class="mono">/netbox/swap/{taskId}/status</span></td><td>Poll VL verdict during the countdown.</td></tr>
+      <tr><td>S5</td><td><span class="mono">PUT</span></td><td><span class="mono">/netbox/swap/{taskId}/retry</span></td><td>Re-run the VL check (retry_count &lt; max).</td></tr>
+      <tr><td>S6</td><td><span class="mono">POST</span></td><td><span class="mono">/netbox/swap/{taskId}/self-confirm</span></td><td>CSP override after retries — commit_reason CSP_OVERRIDE.</td></tr>
+      <tr><td>S7</td><td><span class="mono">DELETE</span></td><td><span class="mono">/netbox/swap/{taskId}</span></td><td>Abandon before physical-confirm.</td></tr>
+    </table></div>
 
-      <!-- SWAP SUCCESS -->
-      <div class="pg" data-pg="swapok">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
-        <div id="prog-swapok"></div>
-        <div class="center"><div class="gcircle g">✓</div><div class="hlg" data-hi="नेट बॉक्स बदल गया!" data-en="NetBox swapped!">नेट बॉक्स बदल गया!</div><div class="hsub" data-hi="नया नेट बॉक्स चालू है। अब सर्विस टिकट रिज़ॉल्व करें।" data-en="The new NetBox is live. Now resolve the ticket.">नया नेट बॉक्स चालू है। अब सर्विस टिकट रिज़ॉल्व करें।</div></div>
-        <div class="reminder" data-hi="पुराना नेट बॉक्स ऑफिस में जमा करना न भूलें" data-en="Don't forget to return the old NetBox">पुराना नेट बॉक्स ऑफिस में जमा करना न भूलें</div>
-        <div class="ctabar"><button class="btn fill" onclick="go('ticket')" data-hi="सर्विस टिकट खोलें" data-en="Open service ticket">सर्विस टिकट खोलें</button></div>
-      </div>
+    <div class="block-h">Mock states — <span class="mono">SwapDebugConfig</span></div>
+    <div class="table-scroll"><table>
+      <tr><th>Knob</th><th>Effect</th><th>Screens</th></tr>
+      <tr><td><span class="mono">eligibilityEligible</span> <span class="pill new">new</span></td><td><span class="pill ok">true</span> → जांच सफल · <span class="pill crit">false</span> → नहीं कर सकते</td><td>checking → success / not-eligible</td></tr>
+      <tr><td><span class="mono">forceVerificationOutcome</span></td><td>CONFIRMED · NOT_CONFIRMED · NO_DATA</td><td>verifying → success / not-verified</td></tr>
+      <tr><td><span class="mono">forceGateRejected · newDeviceInvalid</span></td><td>hard-block the swap at S1</td><td>error / failed</td></tr>
+      <tr><td><span class="mono">verificationDurationSeconds</span></td><td>countdown length</td><td>verifying</td></tr>
+      <tr><td><span class="mono">useMockScanner</span></td><td>auto-succeed scan vs real camera</td><td>scan</td></tr>
+    </table></div>
 
-      <!-- NOT VERIFIED -->
-      <div class="pg" data-pg="notverified">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
-        <div class="center up"><div class="gcircle a">!</div><div class="hlg" data-hi="स्वैप वेरिफाई नहीं हुआ" data-en="Swap not verified">स्वैप वेरिफाई नहीं हुआ</div><div class="hsub" data-hi="नया नेट बॉक्स अभी चालू नहीं हुआ या पुराना अभी भी ऑन है।" data-en="The new NetBox isn't online yet, or the old one is still on.">नया नेट बॉक्स अभी चालू नहीं हुआ या पुराना अभी भी ऑन है।</div></div>
-        <div class="ctabar"><button class="btn fill" onclick="startVerifying()" data-hi="दोबारा कोशिश करें" data-en="Try again">दोबारा कोशिश करें</button><button class="btn text" onclick="go('swapok')" data-hi="मेरी तरफ से हो गया" data-en="Done from my side">मेरी तरफ से हो गया</button></div>
-      </div>
+    <div class="block-h">State machine — gate → swap → verdict</div>
+    <div class="table-scroll"><table>
+      <tr><th>From</th><th>Event</th><th>To</th></tr>
+      <tr><td>Ticket</td><td class="deva">⋮ → सहायता</td><td>Checking (जांच)</td></tr>
+      <tr><td>Checking</td><td>eligible</td><td>Eligible <span class="pill ok">आगे बढ़ें</span></td></tr>
+      <tr><td>Checking</td><td>not eligible</td><td>NotEligible <span class="pill crit">ठीक है → ticket</span></td></tr>
+      <tr><td>Eligible</td><td class="deva">आगे बढ़ें</td><td>Intro → Reason → Scan</td></tr>
+      <tr><td>Scan</td><td>scanned / fallback</td><td>ScanSuccess / DevicePicker</td></tr>
+      <tr><td>ScanSuccess · Picker</td><td>continue</td><td>PhysicalSetup → Processing → Verifying</td></tr>
+      <tr><td>Verifying</td><td>CONFIRMED</td><td>Success <span class="pill ok">swapped</span></td></tr>
+      <tr><td>Verifying</td><td>NOT_CONFIRMED / NO_DATA</td><td>NotVerified <span class="pill warn">retry · self-confirm</span></td></tr>
+      <tr><td>Verifying</td><td>commit failed</td><td>Failed <span class="pill crit">→ ops</span></td></tr>
+    </table></div>
+  </section>
 
-      <!-- FAILED -->
-      <div class="pg" data-pg="failed">
-        <div class="sbar onink"><span>4:15</span><span class="r">LTE 100%</span></div>
-        <div class="abar light"><span class="x" onclick="go('ticket')">✕</span></div>
-        <div class="center up"><div class="gcircle r">✕</div><div class="hlg" data-hi="कुछ गड़बड़ हो गई" data-en="Something went wrong">कुछ गड़बड़ हो गई</div><div class="hsub" data-hi="स्वैप पूरा नहीं हो पाया। Wiom ops टीम को भेज दिया गया है।" data-en="The swap could not be completed. Escalated to the Wiom ops team.">स्वैप पूरा नहीं हो पाया। Wiom ops टीम को भेज दिया गया है।</div></div>
-        <div class="ctabar"><button class="btn text" onclick="go('ticket')" data-hi="बंद करें" data-en="Close">बंद करें</button></div>
-      </div>
+  <!-- ===== PRODUCT INTENT ===== -->
+  <section>
+    <p class="eyebrow">Product intent</p>
+    <h2 class="section-h dv" data-hi="यह क्यों है।" data-en="Why this exists.">यह क्यों है।</h2>
+    <div class="grid2" style="margin-top:22px">
+      <div class="card"><h4 class="dv" data-hi="बेवजह स्वैप घटाना" data-en="Fewer needless swaps">बेवजह स्वैप घटाना</h4><p class="dv" data-hi="हर स्वैप की एक लागत है — इन्वेंट्री, लॉजिस्टिक्स, कस्टमर डाउनटाइम। जांच पहले फ़िल्टर करती है, ताकि सिर्फ़ ज़रूरी डिवाइस ही बदले जाएं।" data-en="Every swap has a cost — inventory, logistics, customer downtime. The जांच filters first, so only devices that truly need it get swapped.">हर स्वैप की एक लागत है — इन्वेंट्री, लॉजिस्टिक्स, कस्टमर डाउनटाइम। जांच पहले फ़िल्टर करती है, ताकि सिर्फ़ ज़रूरी डिवाइस ही बदले जाएं।</p></div>
+      <div class="card"><h4 class="dv" data-hi="पुराने डिवाइस की जवाबदेही" data-en="Old-device accountability">पुराने डिवाइस की जवाबदेही</h4><p class="dv" data-hi="सफलता स्क्रीन CSP को याद दिलाती है कि पुराना नेट बॉक्स ऑफिस में जमा करना है — डिवाइस लीकेज रुकती है।" data-en="The success screen reminds the CSP to return the old NetBox to the office — preventing device leakage.">सफलता स्क्रीन CSP को याद दिलाती है कि पुराना नेट बॉक्स ऑफिस में जमा करना है — डिवाइस लीकेज रुकती है।</p></div>
+      <div class="card"><h4 class="dv" data-hi="भरोसा, दावा नहीं" data-en="Trust, not claims">भरोसा, दावा नहीं</h4><p class="dv" data-hi="स्वैप तभी “पूरा” होता है जब नया डिवाइस असल में ऑनलाइन हो और पुराना बंद — रिमोट पिंग से पक्का किया जाता है।" data-en="A swap is only “done” when the new device is actually online and the old one off — confirmed by a remote ping.">स्वैप तभी “पूरा” होता है जब नया डिवाइस असल में ऑनलाइन हो और पुराना बंद — रिमोट पिंग से पक्का किया जाता है।</p></div>
+      <div class="card"><h4 class="dv" data-hi="फँसने का कोई रास्ता नहीं" data-en="No dead ends">फँसने का कोई रास्ता नहीं</h4><p class="dv" data-hi="हर फेल स्थिति का अगला कदम है — रिट्राई, सेल्फ-कन्फर्म, या ops एस्केलेशन। CSP कभी बिना रास्ते के नहीं छूटता।" data-en="Every failure has a next step — retry, self-confirm, or ops escalation. The CSP is never left without a path.">हर फेल स्थिति का अगला कदम है — रिट्राई, सेल्फ-कन्फर्म, या ops एस्केलेशन। CSP कभी बिना रास्ते के नहीं छूटता।</p></div>
+    </div>
+  </section>
 
-      <!-- SHEET: reason -->
-      <div class="sheet" id="sheet-reason">
-        <div class="grab"></div>
-        <div class="sbody">
-          <h4 data-hi="नेट बॉक्स बदलने का कारण चुनें" data-en="Choose a reason for the swap">नेट बॉक्स बदलने का कारण चुनें</h4>
-          <p class="ssub" data-hi="एक कारण चुनें ताकि हम आगे की प्रक्रिया शुरू कर सकें" data-en="Pick one so we can start the process">एक कारण चुनें ताकि हम आगे की प्रक्रिया शुरू कर सकें</p>
-          <div class="opt" onclick="pickReason(this)"><span class="radio"></span><span data-hi="नेट बॉक्स खराब या टूटा हुआ" data-en="Device hardware fault">नेट बॉक्स खराब या टूटा हुआ</span></div>
-          <div class="opt" onclick="pickReason(this)"><span class="radio"></span><span data-hi="नेट बॉक्स में सॉफ्टवेयर की दिक्कत" data-en="Device software issue">नेट बॉक्स में सॉफ्टवेयर की दिक्कत</span></div>
-          <div class="opt" onclick="pickReason(this)"><span class="radio"></span><span data-hi="नेट बॉक्स कनेक्ट नहीं हो रहा" data-en="Device connectivity issue">नेट बॉक्स कनेक्ट नहीं हो रहा</span></div>
-        </div>
-      </div>
-
-      <!-- SHEET: device picker -->
-      <div class="sheet" id="sheet-picker">
-        <div class="grab"></div>
-        <div class="sbody">
-          <h4 data-hi="नया नेट बॉक्स चुनें" data-en="Select a replacement NetBox">नया नेट बॉक्स चुनें</h4>
-          <p class="ssub" data-hi="स्कैन नहीं हो पाया — नीचे दी गई लिस्ट से नया नेट बॉक्स चुनें" data-en="Scan failed — pick a replacement from the list below">स्कैन नहीं हो पाया — नीचे दी गई लिस्ट से नया नेट बॉक्स चुनें</p>
-          <div class="search">⌕ <span data-hi="नेट बॉक्स ID से खोजें" data-en="Search by NetBox ID">नेट बॉक्स ID से खोजें</span></div>
-          <div id="devlist"></div>
-          <button class="btn fill" style="margin-top:12px" onclick="closeAll();go('physical')" data-hi="यह नेट बॉक्स चुनें" data-en="Select this NetBox">यह नेट बॉक्स चुनें</button>
-        </div>
-      </div>
-    </div></div>
-    <button class="restart dv" onclick="go('ticket');resetOutcomes()" data-hi="↻ शुरू से" data-en="↻ Restart">↻ शुरू से</button>
-  </div>
+  <div class="foot">Wiom CSP · NetBox Swap — Living Spec · <span class="dv">जांच → स्वैप → वेरिफिकेशन</span> · rendered from the app's own tokens &amp; labels.</div>
 </div>
 
 <script>
-var outcome="elig", vl="ok", reasonPicked=false, timers=[];
+var outcome="elig",vl="ok",timers=[];
 function clearTimers(){timers.forEach(clearTimeout);timers=[];}
-function progressHTML(active,done){
-  var labels=[["नया स्कैन","Scan new"],["लगाएं","Install"],["वेरिफाई","Verify"],["तैयार","Ready"]];
-  var t='<div class="prog"><div class="ptrack">';
-  for(var i=0;i<4;i++){var cls=i<done?"pnode done":(i===active?"pnode on":"pnode");t+='<div class="'+cls+'">'+(i<done?"✓":"")+'</div>';if(i<3)t+='<div class="pseg'+(i<done?" done":"")+'"></div>';}
-  t+='</div><div class="plabels">';for(var j=0;j<4;j++){t+='<span class="'+(j===active?"on":"")+'" data-hi="'+labels[j][0]+'" data-en="'+labels[j][1]+'">'+labels[j][0]+'</span>';}
-  t+='</div></div>';return t;
-}
+function progressHTML(active,done){var L=[["नया स्कैन","Scan new"],["लगाएं","Install"],["वेरिफाई","Verify"],["तैयार","Ready"]];var t='<div class="prog"><div class="ptrack">';for(var i=0;i<4;i++){var c=i<done?"pnode done":(i===active?"pnode on":"pnode");t+='<div class="'+c+'">'+(i<done?"✓":"")+'</div>';if(i<3)t+='<div class="pseg'+(i<done?" done":"")+'"></div>';}t+='</div><div class="plabels">';for(var j=0;j<4;j++)t+='<span class="'+(j===active?"on":"")+'" data-hi="'+L[j][0]+'" data-en="'+L[j][1]+'">'+L[j][0]+'</span>';return t+'</div></div>';}
 document.getElementById('prog-intro').innerHTML=progressHTML(0,0);
 document.getElementById('prog-scan').innerHTML=progressHTML(0,0);
 document.getElementById('prog-physical').innerHTML=progressHTML(1,1);
 document.getElementById('prog-verifying').innerHTML=progressHTML(2,2);
 document.getElementById('prog-swapok').innerHTML=progressHTML(3,4);
-// device list
 var devs=["1001","1002","1003","2045","3078"];
 document.getElementById('devlist').innerHTML=devs.map(function(id,i){return '<div class="dev'+(i===0?' sel':'')+'" onclick="pickDev(this)"><span class="cbx">'+(i===0?'✓':'')+'</span><div><b>NB-REP-'+id+'</b><small>Replacement #'+id+'</small></div></div>';}).join('');
-
 var PAGES=[["ticket","टिकट+⋮"],["checking","जांच"],["success","जांच सफल"],["inelig","नहीं कर सकते"],["intro","इंट्रो"],["reason","कारण"],["scan","स्कैन"],["scansuccess","स्कैन सफल"],["picker","डिवाइस पिकर"],["physical","लगाएं"],["processing","प्रोसेसिंग"],["verifying","वेरिफाई"],["swapok","स्वैप सफल"],["notverified","वेरिफाई नहीं"],["failed","फेल"]];
 document.getElementById('chips').innerHTML=PAGES.map(function(p){return '<button class="chip" data-jump="'+p[0]+'" onclick="jump(\''+p[0]+'\')">'+p[1]+'</button>';}).join('');
-
 function setActiveChip(id){document.querySelectorAll('#chips .chip').forEach(function(c){c.classList.toggle('on',c.getAttribute('data-jump')===id);});}
 function go(id){clearTimers();closeAll();document.querySelectorAll('.pg').forEach(function(p){p.classList.toggle('active',p.getAttribute('data-pg')===id);});setActiveChip(id);}
 function jump(id){if(id==="reason"){go('intro');openSheet('reason');}else if(id==="picker"){go('scan');openSheet('picker');}else go(id);}
 function openMenu(){document.getElementById('menu').classList.add('on');document.getElementById('scrim').classList.add('on');}
-function openSheet(name){document.getElementById('sheet-'+name).classList.add('on');document.getElementById('scrim').classList.add('on');setActiveChip(name);}
+function openSheet(n){document.getElementById('sheet-'+n).classList.add('on');document.getElementById('scrim').classList.add('on');setActiveChip(n);}
 function closeAll(){document.getElementById('menu').classList.remove('on');document.querySelectorAll('.sheet').forEach(function(s){s.classList.remove('on');});document.getElementById('scrim').classList.remove('on');}
 function startJaanch(){go('checking');timers.push(setTimeout(function(){go(outcome==='elig'?'success':'inelig');},2400));}
 function pickReason(el){document.querySelectorAll('#sheet-reason .opt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');timers.push(setTimeout(function(){closeAll();go('scan');},420));}
 function pickDev(el){document.querySelectorAll('#sheet-picker .dev').forEach(function(d){d.classList.remove('sel');d.querySelector('.cbx').textContent='';});el.classList.add('sel');el.querySelector('.cbx').textContent='✓';}
-function startProcessing(){go('processing');timers.push(setTimeout(function(){startVerifying();},1600));}
-function startVerifying(){go('verifying');var t=134;var cd=document.getElementById('cd');var iv=setInterval(function(){t--;var m=Math.floor(t/60),s=t%60;cd.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;if(t<=128){clearInterval(iv);}},120);timers.push(setTimeout(function(){go(vl==='ok'?'swapok':(vl==='no'?'notverified':'failed'));},3200));}
+function startProcessing(){go('processing');timers.push(setTimeout(startVerifying,1600));}
+function startVerifying(){go('verifying');var t=134,cd=document.getElementById('cd');var iv=setInterval(function(){t--;var m=Math.floor(t/60),s=t%60;cd.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;if(t<=128)clearInterval(iv);},120);timers.push(setTimeout(function(){go(vl==='ok'?'swapok':(vl==='no'?'notverified':'failed'));},3200));}
 function setOutcome(v,el){outcome=v;el.parentNode.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');}
 function setVL(v,el){vl=v;el.parentNode.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');}
-function resetOutcomes(){/* keep selections */}
-// lang
-function setLang(l){document.querySelectorAll('[data-hi]').forEach(function(e){var v=e.getAttribute(l==='hi'?'data-hi':'data-en');if(v!=null)e.textContent=v;});document.getElementById('hi').setAttribute('aria-pressed',l==='hi');document.getElementById('en').setAttribute('aria-pressed',l==='en');}
+function setLang(l){document.querySelectorAll('[data-hi]').forEach(function(e){var v=e.getAttribute(l==='hi'?'data-hi':'data-en');if(v!=null)e.innerHTML=v;});document.getElementById('hi').setAttribute('aria-pressed',l==='hi');document.getElementById('en').setAttribute('aria-pressed',l==='en');}
 document.getElementById('hi').onclick=function(){setLang('hi');};
 document.getElementById('en').onclick=function(){setLang('en');};
 go('ticket');
